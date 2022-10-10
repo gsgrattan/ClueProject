@@ -1,10 +1,13 @@
-package experiment;
+package tests;
 
 import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import experiment.TestBoard;
+import experiment.TestBoardCell;
 
 public class BoardTestExp {
 	private final static int size = 4;
