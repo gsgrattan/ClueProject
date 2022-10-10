@@ -5,8 +5,6 @@ import java.util.Set;
 
 public class TestBoardCell {
 	private final static int NUM_ADJACENT = 4;
-	private int row;
-	private int column;
 
 	private boolean isOccupied = false;
 	private boolean isRoom = false;
@@ -15,9 +13,7 @@ public class TestBoardCell {
 	private Set<TestBoardCell> adjacencyList;
 
 	// Constructor
-	public TestBoardCell(int row, int column) {
-		this.row = row;
-		this.column = column;
+	public TestBoardCell() {
 		this.adjacencyList = new HashSet<TestBoardCell>();
 	}
 
@@ -58,7 +54,7 @@ public class TestBoardCell {
 
 	// Add an cell to the adjacency list
 	public void addAdjacency(TestBoardCell cell) {
-
+		this.adjacencyList.add(cell);
 	}
 
 }
