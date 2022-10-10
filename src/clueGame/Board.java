@@ -86,6 +86,10 @@ public class Board {
 		return 0;
 	}
 
+	public int getNumRooms() {
+		return 0;
+	}
+
 	public BoardCell getCell(int i, int j) {
 		// TODO Auto-generated method stub
 		return new BoardCell();
