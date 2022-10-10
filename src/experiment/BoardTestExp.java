@@ -92,4 +92,11 @@ public class BoardTestExp {
 		Assert.assertTrue(targets.contains(board.getCell(2, 2)));
 		Assert.assertTrue(targets.contains(board.getCell(3, 3)));
 	}
+
+	@Test
+	public void testTestBoardCellToString() {
+		TestBoardCell cell = board.getCell(0, 0);
+		Assert.assertEquals(cell.toString(), "(0, 0)");
+	}
+
 }
