@@ -1,0 +1,14 @@
+Tested to make sure all rooms were loaded. Including the first and last.
+
+The Kitchen door opens left
+The Parlor door opens up
+The Bathroom door opens right
+The Observatory door opens down
+The cell at 6,7 is a walkway
+
+The cell at 2, 3 is in the Parlor, but not a center or label cell
+The cell at 3, 12 is in the Kitchen, and is a label cell but not a center cell
+The cell at 24, 12 is in the Observatory, and is a center cell but not a label cell
+The cell at 24, 24 is a secret passage starting in the Office and ending in the Parlor ('P')
+The cell at 16, 7 is a walkway.
+The cell at 11, 11 is an Unused cell.
