@@ -7,12 +7,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class BoardTestExp {
+	private final static int size = 4;
+
 	TestBoard board;
 
 	@Before
 	public void setUp() {
 		// board should create adjacency list
-		board = new TestBoard();
+		// Right now each board is 4x4
+		board = new TestBoard(size, size);
 	}
 
 	/*
@@ -68,7 +71,7 @@ public class BoardTestExp {
 		TestBoardCell cell = board.getCell(0, 0);
 		board.calcTargets(cell, 1);
 		Set<TestBoardCell> targets = board.getTargets();
-		Assert.assertEquals(2, targets.size());
+		Assert.assertEquals(1, targets.size());
 		Assert.assertTrue(targets.contains(board.getCell(0, 1)));
 		Assert.assertFalse(targets.contains(board.getCell(1, 0)));
 	}
