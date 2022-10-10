@@ -9,12 +9,16 @@ public class TestBoardCell {
 	private boolean isOccupied = false;
 	private boolean isRoom = false;
 	private boolean isDoor = false;
+	int row;
+	int col;
 
 	private Set<TestBoardCell> adjacencyList;
 
 	// Constructor
-	public TestBoardCell() {
+	public TestBoardCell(int row, int col) {
 		this.adjacencyList = new HashSet<TestBoardCell>();
+		this.row = row;
+		this.col = col;
 	}
 
 	// Set if the cell is occupied
@@ -37,15 +41,15 @@ public class TestBoardCell {
 		return this.isRoom;
 	}
 
-	// Set if the cell is a door
-	public void setIsDoor(boolean isDoor) {
-		this.isDoor = isDoor;
-	}
-
-	// Get if the cell is a door
-	public boolean getDoor() {
-		return this.isDoor;
-	}
+//	// Set if the cell is a door
+//	public void setIsDoor(boolean isDoor) {
+//		this.isDoor = isDoor;
+//	}
+//
+//	// Get if the cell is a door
+//	public boolean getDoor() {
+//		return this.isDoor;
+//	}
 
 	// Return the adjacency list (all cells adjancent to this one)
 	public Set<TestBoardCell> getAdjList() {
@@ -55,6 +59,11 @@ public class TestBoardCell {
 	// Add an cell to the adjacency list
 	public void addAdjacency(TestBoardCell cell) {
 		this.adjacencyList.add(cell);
+	}
+
+	@Override
+	public String toString() {
+		return "(" + row + ", " + col + ")";
 	}
 
 }
