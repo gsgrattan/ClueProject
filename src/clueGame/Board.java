@@ -1,7 +1,11 @@
 package clueGame;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
+
 
 // I'm gonna be honest, this is not a great singleton at all.
 public class Board {
@@ -32,7 +36,12 @@ public class Board {
 
 		this.loadSetupConfig();
 
-		this.loadLayoutConfig();
+		try {
+			this.loadLayoutConfig();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 
@@ -44,31 +53,80 @@ public class Board {
 	}
 
 	public void loadSetupConfig() {
-//		File set = new File("data/" + this.setup);
+		File set = new File("data/" + this.setup);
 	}
 
-	public void loadLayoutConfig() {
-//		File lay = new File("data/" + this.setup);
-//		Scanner reader = new Scanner(lay);
-//
-//		int rows = 0;
-//		int cols = -1;
-//
-//		while (reader.hasNextLine()) {
-//			String data = reader.nextLine();
-//			String[] splitData = data.split(",");
-//			if (cols == -1) {
-//				cols = splitData.length;
-//			} else if (splitData.length != cols) {
-//				// Stub, put error message / throws BadConfigFormatException
-//			}
-//			ArrayList<BoardCell> r = new ArrayList<BoardCell>(cols);
-//
-//			for (String cell : splitData) {
-//				r.add(new BoardCell());
-//			}
-//			this.board.add(r);
-//		}
+	public void loadLayoutConfig() throws FileNotFoundException {
+		File lay = new File("data/" + this.setup);
+		Scanner reader = new Scanner(lay);
+
+		int rows = 0;
+		int cols = 0;
+		
+		while (reader.hasNextLine()) {
+			
+			String data = reader.nextLine();
+			String[] splitData = data.split(",");
+			if (cols == -1) {
+				cols = splitData.length;
+			} else if (splitData.length != cols) {
+				// Stub, put error message / throws BadConfigFormatException
+			}
+			ArrayList<BoardCell> r = new ArrayList<BoardCell>(cols);
+
+			
+			for (String cell : splitData) {
+				BoardCell b = new BoardCell(rows, cols);
+				r.add(b);
+			
+				
+				if (cell.length() == 1) {
+					
+					b.setCellLabel(cell.charAt(0));
+				}
+				else if (cell.length() == 2) {
+					b.setCellLabel(cell.charAt(0));
+					char specialOperation = cell.charAt(1);
+					
+					DoorDirection direction;
+					
+					if (specialOperation == '^') {
+						direction = DoorDirection.UP;
+						b.setDoorDirection(direction);
+					}
+					else if(specialOperation == '>') {
+						direction = DoorDirection.RIGHT;
+						b.setDoorDirection(direction);
+						
+					}
+					else if (specialOperation == '<') {
+						direction = DoorDirection.LEFT;
+						b.setDoorDirection(direction);
+					}
+					else if (specialOperation == 'v') {
+						direction = DoorDirection.DOWN;
+						b.setDoorDirection(direction);
+					}
+					
+					else if (specialOperation == '#') {
+						b.setRoomLabel(true);
+					}
+					else if (specialOperation == '*') {
+						b.setRoomCenter(true);
+					}
+					else {
+						b.setSecretPassage(specialOperation);
+					}
+				}
+				
+				cols++;
+					
+			}
+			this.board.add(r);
+			
+			rows++;
+			cols = 0;
+		}
 	}
 
 	public Room getRoom(char c) {
@@ -91,8 +149,7 @@ public class Board {
 	}
 
 	public BoardCell getCell(int i, int j) {
-		// TODO Auto-generated method stub
-		return new BoardCell();
+		return board.get(i).get(j);
 	}
 
 	public Room getRoom(BoardCell cell) {
