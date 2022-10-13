@@ -4,9 +4,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
 // I'm gonna be honest, this is not a great singleton at all.
 public class Board {
@@ -20,7 +22,7 @@ public class Board {
 	private int numCols = -1;
 	private int numRooms = 0;
 
-	private static final Board INSTANCE = new Board();
+	private static Board INSTANCE = new Board();
 	private String layout;
 	private String setup;
 	private List<List<BoardCell>> board;
@@ -41,6 +43,12 @@ public class Board {
 	 * initialize the board (since we are using singleton pattern)
 	 */
 	public void initialize() {
+		INSTANCE = new Board();
+		this.board = new ArrayList<List<BoardCell>>();
+		this.roomMap = new HashMap<Character, Room>();
+		numCols = -1;
+		numRooms = 0;
+
 		try {
 			this.loadSetupConfig();
 		} catch (FileNotFoundException e) {
@@ -267,6 +275,21 @@ public class Board {
 	public Room getRoom(BoardCell cell) {
 		char label = cell.getCellLabel();
 		return this.roomMap.get(label);
+	}
+
+	public Set<BoardCell> getAdjList(int i, int j) {
+		// TODO Auto-generated method stub
+		return new HashSet();
+	}
+
+	public Set<BoardCell> getTargets() {
+		// TODO Auto-generated method stub
+		return new HashSet();
+	}
+
+	public void calcTargets(BoardCell cell, int i) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

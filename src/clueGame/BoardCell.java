@@ -107,4 +107,9 @@ public class BoardCell {
 		this.adjacencyList.add(adj);
 	}
 
+	public void setOccupied(boolean b) {
+		// TODO Auto-generated method stub
+
+	}
+
 }
