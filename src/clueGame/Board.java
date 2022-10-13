@@ -14,6 +14,8 @@ public class Board {
 	/*
 	 * variable and methods used for singleton pattern
 	 */
+
+	// TODO: Switch rows and columns becuase they are backwards right now.
 	private int numRows;
 	private int numCols = -1;
 	private int numRooms = 0;
@@ -80,7 +82,7 @@ public class Board {
 
 				if (splitData[0].equals("Room")) {
 					this.numRooms++;
-				} else if(!splitData[0].equals("Space")) {
+				} else if (!splitData[0].equals("Space")) {
 					throw new BadConfigFormatException();
 				}
 
@@ -100,22 +102,21 @@ public class Board {
 
 			String data = reader.nextLine();
 			String[] splitData = data.split(",");
-			
+
 			cols = splitData.length;
 
 			if (numCols == -1) {
 				numCols = cols;
-			}			
-			
+			}
+
 			ArrayList<BoardCell> r = new ArrayList<BoardCell>(cols);
 
 			for (String cell : splitData) {
 				BoardCell b = new BoardCell(rows, cols);
-				
-				if(!roomMap.containsKey(cell.charAt(0))) {
+
+				if (!roomMap.containsKey(cell.charAt(0))) {
 					throw new BadConfigFormatException();
 				}
-				
 
 				if (cell.length() == 1) {
 
@@ -156,16 +157,13 @@ public class Board {
 				}
 				r.add(b);
 			}
-			
-			System.out.println(cols + " " + this.numCols);
-			
-			if(this.board.size() != 0) {
-				if(cols != this.numCols) {
-					System.out.println("WE'RE FUCKING HERE");
+
+			if (this.board.size() != 0) {
+				if (cols != this.numCols) {
 					throw new BadConfigFormatException();
 				}
 			}
-			
+
 			this.board.add(r);
 
 			rows++;
