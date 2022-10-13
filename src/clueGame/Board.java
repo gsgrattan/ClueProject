@@ -27,6 +27,7 @@ public class Board {
 	// constructor is private to ensure only one can be created
 	private Board() {
 		super();
+		this.board = new ArrayList<List<BoardCell>>();
 	}
 
 	// this method returns the only Board
@@ -38,8 +39,6 @@ public class Board {
 	 * initialize the board (since we are using singleton pattern)
 	 */
 	public void initialize() {
-		this.board = new ArrayList<List<BoardCell>>();
-
 		try {
 			this.loadSetupConfig();
 		} catch (FileNotFoundException e) {
@@ -59,7 +58,6 @@ public class Board {
 			System.out.println("Bad Config: Invalid Character in Layout");
 			e.printStackTrace();
 		}
-
 	}
 
 	public void setConfigFiles(String layout, String setup) {
@@ -82,6 +80,8 @@ public class Board {
 
 				if (splitData[0].equals("Room")) {
 					this.numRooms++;
+				} else if(!splitData[0].equals("Space")) {
+					throw new BadConfigFormatException();
 				}
 
 				Room r = new Room(splitData[1]);
@@ -96,21 +96,26 @@ public class Board {
 
 		int rows = 0;
 		int cols = 0;
-
 		while (reader.hasNextLine()) {
 
 			String data = reader.nextLine();
 			String[] splitData = data.split(",");
+			
+			cols = splitData.length;
 
-			if (cols == -1) {
-				cols = splitData.length;
-			} else if (splitData.length != cols) {
-				// Stub, put error message / throws BadConfigFormatException
-			}
+			if (numCols == -1) {
+				numCols = cols;
+			}			
+			
 			ArrayList<BoardCell> r = new ArrayList<BoardCell>(cols);
 
 			for (String cell : splitData) {
 				BoardCell b = new BoardCell(rows, cols);
+				
+				if(!roomMap.containsKey(cell.charAt(0))) {
+					throw new BadConfigFormatException();
+				}
+				
 
 				if (cell.length() == 1) {
 
@@ -150,21 +155,28 @@ public class Board {
 					}
 				}
 				r.add(b);
-
-				cols++;
-
 			}
+			
+			System.out.println(cols + " " + this.numCols);
+			
+			if(this.board.size() != 0) {
+				if(cols != this.numCols) {
+					System.out.println("WE'RE FUCKING HERE");
+					throw new BadConfigFormatException();
+				}
+			}
+			
 			this.board.add(r);
 
 			rows++;
 
-			if (numCols != -1) {
-				if (this.numCols != cols) {
-					throw new BadConfigFormatException();
-				}
-			} else {
-				this.numCols = cols;
-			}
+//			if (numCols != -1) {
+//				if (this.numCols != cols) {
+//					throw new BadConfigFormatException();
+//				}
+//			} else {
+//				this.numCols = cols;
+//			}
 
 			cols = 0;
 		}
