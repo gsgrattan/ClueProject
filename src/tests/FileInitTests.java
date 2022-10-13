@@ -15,8 +15,8 @@ import clueGame.Room;
 
 public class FileInitTests {
 	// Constants that I will use to test whether the file was loaded correctly
-	public static final int LEGEND_SIZE = 10;
-	public static final int NUM_ROWS = 24;
+	public static final int LEGEND_SIZE = 9;
+	public static final int NUM_ROWS = 26;
 	public static final int NUM_COLUMNS = 25;
 
 	// NOTE: I made Board static because I only want to set it up one
@@ -62,7 +62,7 @@ public class FileInitTests {
 	// These cells are white on the planning spreadsheet
 	@Test
 	public void FourDoorDirections() {
-		BoardCell cell = board.getCell(6, 16);
+		BoardCell cell = board.getCell(14, 6);
 		assertTrue(cell.isDoorway());
 		assertEquals(DoorDirection.LEFT, cell.getDoorDirection());
 		cell = board.getCell(4, 6);
@@ -99,7 +99,11 @@ public class FileInitTests {
 		// just test a standard room location
 		BoardCell cell = board.getCell(2, 3);
 		Room room = board.getRoom(cell);
+
+		System.out.println(cell.getCellLabel());
+
 		assertTrue(room != null);
+
 		assertEquals(room.getName(), "Parlor");
 		assertFalse(cell.isLabel());
 		assertFalse(cell.isRoomCenter());
@@ -114,7 +118,7 @@ public class FileInitTests {
 		assertTrue(room.getLabelCell() == cell);
 
 		// this is a room center cell to test
-		cell = board.getCell(24, 12);
+		cell = board.getCell(22, 12);
 		room = board.getRoom(cell);
 		assertTrue(room != null);
 		assertEquals(room.getName(), "Observatory");
@@ -122,7 +126,7 @@ public class FileInitTests {
 		assertTrue(room.getCenterCell() == cell);
 
 		// this is a secret passage test
-		cell = board.getCell(24, 24);
+		cell = board.getCell(22, 24);
 		room = board.getRoom(cell);
 		assertTrue(room != null);
 		assertEquals(room.getName(), "Office");
