@@ -62,12 +62,20 @@ public class Board {
 		}
 	}
 
+	/*
+	 * set the config files in the object to whatever layout, string are.
+	 */
+
 	public void setConfigFiles(String layout, String setup) {
 		// TODO Auto-generated method stub
 		this.layout = layout;
 		this.setup = setup;
 
 	}
+
+	/*
+	 * Load the setup config file into the roomMap.
+	 */
 
 	public void loadSetupConfig() throws FileNotFoundException, BadConfigFormatException {
 		roomMap = new HashMap();
@@ -92,41 +100,53 @@ public class Board {
 		}
 	}
 
+	/*
+	 * Load the playing board.
+	 */
 	public void loadLayoutConfig() throws FileNotFoundException, BadConfigFormatException {
 		File lay = new File("data/" + this.layout);
 		Scanner reader = new Scanner(lay);
 
 		int rows = 0;
 		int cols = 0;
+		// Iterate through each row of the csv and thus each row of the board
 		while (reader.hasNextLine()) {
 
+			// Seperate out the columns delimeted by a csv
 			String data = reader.nextLine();
 			String[] splitData = data.split(",");
 
 			cols = splitData.length;
 
+			// Set the number of columns of the forst pass through
 			if (numCols == -1) {
 				numCols = cols;
 			}
 
+			// create the array for the row
 			ArrayList<BoardCell> r = new ArrayList<BoardCell>(cols);
 
+			// iterate through the split data
 			for (String cell : splitData) {
 				BoardCell b = new BoardCell(rows, cols);
 
+				// if the room label is not valid throw an Exception
 				if (!roomMap.containsKey(cell.charAt(0))) {
 					throw new BadConfigFormatException();
 				}
 
+				// If the cell is a normal cell, just a label
 				if (cell.length() == 1) {
 
 					b.setCellLabel(cell.charAt(0));
+
+					// if the cell has some spectial operation
 				} else if (cell.length() == 2) {
 					b.setCellLabel(cell.charAt(0));
 					char specialOperation = cell.charAt(1);
 
 					DoorDirection direction;
-
+					// set the door direction
 					if (specialOperation == '^') {
 						direction = DoorDirection.UP;
 						b.setDoorDirection(direction);
@@ -141,12 +161,14 @@ public class Board {
 						direction = DoorDirection.DOWN;
 						b.setDoorDirection(direction);
 					}
-
+					// set the room label
 					else if (specialOperation == '#') {
 						b.setRoomLabel(true);
+						// set the room center
 					} else if (specialOperation == '*') {
 						b.setRoomCenter(true);
 					} else {
+						// else it's a secret passage or an error
 						if (roomMap.containsKey(specialOperation)) {
 							b.setSecretPassage(specialOperation);
 						} else {
@@ -158,89 +180,90 @@ public class Board {
 				r.add(b);
 			}
 
+			// if the board size has been set/ initialized
 			if (this.board.size() != 0) {
+				// assert that it has the correct number of columns, if it doesn't, throw an
+				// exception
 				if (cols != this.numCols) {
 					throw new BadConfigFormatException();
 				}
 			}
-
+			// add the row
 			this.board.add(r);
 
+			// increment the row
 			rows++;
 
-//			if (numCols != -1) {
-//				if (this.numCols != cols) {
-//					throw new BadConfigFormatException();
-//				}
-//			} else {
-//				this.numCols = cols;
-//			}
-
+			// reset the column
 			cols = 0;
 		}
 		this.numRows = rows;
 
+		// iterate throught he gameboard
 		for (int i = 0; i < this.numRows; i++) {
 			for (int j = 0; j < this.numCols; j++) {
-
+				// get the boardcell
 				BoardCell b = this.board.get(i).get(j);
 
 				Room r = this.roomMap.get(b.getCellLabel());
 
+				// if the room is the center, set it so
 				if (b.getRoomCenter()) {
 					r.setCenter(b);
 				}
 
+				// if the room is the label, set it so
 				if (b.getRoomLabel()) {
 					r.setLabelCell(b);
 				}
 
-//				if (i - 1 >= 0) {
-//					BoardCell adj = this.board.get(i - 1).get(j);
-//					this.board.get(i).get(j).addAdjacency(adj);
-//				}
-//
-//				if (i + 1 < rows) {
-//					BoardCell adj = this.board.get(i + 1).get(j);
-//					this.board.get(i).get(j).addAdjacency(adj);
-//				}
-//
-//				if (j - 1 >= 0) {
-//					BoardCell adj = this.board.get(i).get(j - 1);
-//					this.board.get(i).get(j).addAdjacency(adj);
-//				}
-//
-//				if (j + 1 < rows) {
-//					BoardCell adj = this.board.get(i).get(j + 1);
-//					this.board.get(i).get(j).addAdjacency(adj);
-//				}
+//		
 			}
 		}
 
 	}
 
+	/*
+	 * Get the room
+	 */
 	public Room getRoom(char c) {
 		return roomMap.get(c);
 
 	}
 
+	/*
+	 * Get the number of rows in the file
+	 */
 	public int getNumRows() {
 
 		return this.numRows;
 	}
 
+	/*
+	 * Get the number of columns in the board
+	 */
 	public int getNumColumns() {
 		return this.numCols;
 	}
 
+	/*
+	 * get the number of rooms in the layout
+	 */
 	public int getNumRooms() {
 		return this.numRooms;
 	}
+
+	/*
+	 * get a specific cell specified by (row, column)
+	 */
 
 	public BoardCell getCell(int row, int col) {
 		return board.get(row).get(col);
 	}
 
+	/*
+	 * Get the room label of a cell
+	 */
 	public Room getRoom(BoardCell cell) {
 		char label = cell.getCellLabel();
 		return this.roomMap.get(label);
