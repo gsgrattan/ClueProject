@@ -1,5 +1,5 @@
 // Rooms and room cards
-Room, Parlor , P
+Room, Parlor, P
 Room, Kitchen, K
 Room, Mud Room, M 
 Room, Library, L
