@@ -100,8 +100,6 @@ public class FileInitTests {
 		BoardCell cell = board.getCell(2, 3);
 		Room room = board.getRoom(cell);
 
-		System.out.println(cell.getCellLabel());
-
 		assertTrue(room != null);
 
 		assertEquals(room.getName(), "Parlor");

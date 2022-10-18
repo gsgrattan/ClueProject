@@ -426,7 +426,7 @@ public class Board {
 
 	public void calcTargets(BoardCell startCell, int pathlength) {
 
-		System.out.println("\nNew targets generated\n");
+//		System.out.println("\nNew targets generated\n");
 
 		targets = new HashSet<BoardCell>();
 		this.calcTargets(startCell, pathlength, pathlength, new HashSet<BoardCell>());
