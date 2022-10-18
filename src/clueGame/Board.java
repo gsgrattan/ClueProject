@@ -27,6 +27,7 @@ public class Board {
 	private String setup;
 	private List<List<BoardCell>> board;
 	private Map<Character, Room> roomMap;
+	private Set<BoardCell> targets;
 
 	// constructor is private to ensure only one can be created
 	private Board() {
@@ -111,6 +112,8 @@ public class Board {
 				roomMap.put(splitData[2].charAt(0), r);
 			}
 		}
+
+		reader.close();
 	}
 
 	/*
@@ -418,12 +421,46 @@ public class Board {
 	}
 
 	public Set<BoardCell> getTargets() {
-		return new HashSet();
+		return this.targets;
 	}
 
-	public void calcTargets(BoardCell cell, int i) {
-		// TODO Auto-generated method stub
+	public void calcTargets(BoardCell startCell, int pathlength) {
 
+		System.out.println("\nNew targets generated\n");
+
+		targets = new HashSet<BoardCell>();
+		this.calcTargets(startCell, pathlength, pathlength, new HashSet<BoardCell>());
+
+//		for (BoardCell t : targets) {
+//			System.out.println("Row: " + t.getRow() + ", Col: " + t.getCol());
+//		}
+
+	}
+
+	private void calcTargets(BoardCell startCell, int pathlength, int maxpath, Set<BoardCell> visited) {
+		if (visited.isEmpty()) {
+			visited.add(startCell);
+		}
+
+		if (pathlength == 0 || (startCell.isRoomCenter() && maxpath != pathlength)) {
+			targets.add(startCell);
+
+//			System.out.println("FINAL CELL, Row: " + startCell.getRow() + ", Col: " + startCell.getCol() + "\n");
+
+		} else {
+			for (BoardCell cell : startCell.getAdjList()) {
+
+				if ((cell.isRoomCenter() || !cell.getOccupied()) && !visited.contains(cell)) {
+
+//					System.out.println("Row: " + startCell.getRow() + ", Col: " + startCell.getCol() + " TO " + "Row: "
+//							+ cell.getRow() + ", Col: " + cell.getCol());
+
+					visited.add(cell);
+					calcTargets(cell, pathlength - 1, maxpath, visited);
+					visited.remove(cell);
+				}
+			}
+		}
 	}
 
 }
