@@ -13,6 +13,7 @@ public class BoardCell {
 	private Boolean roomCenter = false;
 	private Boolean isDoorway = false;
 	private char secretPassage = '\0';
+	private Boolean isOccupied = false;
 
 	private Set<BoardCell> adjacencyList;
 
@@ -74,31 +75,34 @@ public class BoardCell {
 
 	// Set the boolean if it is a doorwar
 	public boolean isDoorway() {
-		// TODO Auto-generated method stub
 		return this.isDoorway;
+	}
+
+	public int getRow() {
+		return row;
+	}
+
+	public int getCol() {
+		return col;
 	}
 
 	// Returns the door direciton
 	public DoorDirection getDoorDirection() {
-		// TODO Auto-generated method stub
 		return this.doorDirection;
 	}
 
 	// Set the boolean to True if the room is the label
 	public boolean isLabel() {
-		// TODO Auto-generated method stub
 		return roomLabel;
 	}
 
 	// Return true if the cell is the center of the room
 	public boolean isRoomCenter() {
-		// TODO Auto-generated method stub
 		return roomCenter;
 	}
 
 	// return the destination of the secret passage
 	public char getSecretPassage() {
-		// TODO Auto-generated method stub
 		return secretPassage;
 	}
 
@@ -107,9 +111,14 @@ public class BoardCell {
 		this.adjacencyList.add(adj);
 	}
 
+	// Set the boolean if the cell is occupied
 	public void setOccupied(boolean b) {
-		// TODO Auto-generated method stub
+		this.isOccupied = b;
+	}
 
+	// Get if the cell is occupied
+	public boolean getOccupied() {
+		return this.isOccupied;
 	}
 
 }
