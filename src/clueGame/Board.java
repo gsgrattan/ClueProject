@@ -103,6 +103,11 @@ public class Board {
 				}
 
 				Room r = new Room(splitData[1]);
+
+				if (splitData[0].equals("Room")) {
+					r.setIsRoom(true);
+				}
+
 				roomMap.put(splitData[2].charAt(0), r);
 			}
 		}
@@ -112,11 +117,17 @@ public class Board {
 	 * Load the playing board.
 	 */
 	public void loadLayoutConfig() throws FileNotFoundException, BadConfigFormatException {
+
+		// System.out.println("\n\n\nSTART OF OUTPUT:");
+
 		File lay = new File("data/" + this.layout);
 		Scanner reader = new Scanner(lay);
 
+		ArrayList<BoardCell> doorways = new ArrayList<BoardCell>();
+
 		int rows = 0;
 		int cols = 0;
+
 		// Iterate through each row of the csv and thus each row of the board
 		while (reader.hasNextLine()) {
 
@@ -135,8 +146,10 @@ public class Board {
 			ArrayList<BoardCell> r = new ArrayList<BoardCell>(cols);
 
 			// iterate through the split data
+			int col = 0;
 			for (String cell : splitData) {
-				BoardCell b = new BoardCell(rows, cols);
+				BoardCell b = new BoardCell(rows, col);
+				col++;
 
 				// if the room label is not valid throw an Exception
 				if (!roomMap.containsKey(cell.charAt(0))) {
@@ -150,6 +163,9 @@ public class Board {
 
 					// if the cell has some spectial operation
 				} else if (cell.length() == 2) {
+
+					// System.out.println(cell);
+
 					b.setCellLabel(cell.charAt(0));
 					char specialOperation = cell.charAt(1);
 
@@ -158,16 +174,19 @@ public class Board {
 					if (specialOperation == '^') {
 						direction = DoorDirection.UP;
 						b.setDoorDirection(direction);
+						// doorways.add(b);
 					} else if (specialOperation == '>') {
 						direction = DoorDirection.RIGHT;
 						b.setDoorDirection(direction);
-
+						// doorways.add(b);
 					} else if (specialOperation == '<') {
 						direction = DoorDirection.LEFT;
 						b.setDoorDirection(direction);
+						// doorways.add(b);
 					} else if (specialOperation == 'v') {
 						direction = DoorDirection.DOWN;
 						b.setDoorDirection(direction);
+						// doorways.add(b);
 					}
 					// set the room label
 					else if (specialOperation == '#') {
@@ -182,10 +201,19 @@ public class Board {
 						} else {
 							throw new BadConfigFormatException();
 						}
-
 					}
 				}
 				r.add(b);
+
+				// System.out.println(b.getCellLabel());
+
+				if (b.isDoorway()) {
+					// System.out.println("This is a doorway. Row: " + b.getRow() + ", Col: " +
+					// b.getCol());
+
+					doorways.add(b);
+				}
+
 			}
 
 			// if the board size has been set/ initialized
@@ -205,30 +233,140 @@ public class Board {
 			// reset the column
 			cols = 0;
 		}
+
+		reader.close();
+
 		this.numRows = rows;
 
-		// iterate throught he gameboard
+		ArrayList<BoardCell> secretPaths = new ArrayList<BoardCell>();
+
+		// System.out.println("");
+
+//		for (int i = 0; i < this.numRows; i++) {
+//			for (int j = 0; j < this.numCols; j++) {
+//				BoardCell b = this.board.get(i).get(j);
+//
+//				System.out.print("" + b.getCellLabel() + ", ");
+//			}
+//			System.out.println("");
+//		}
+
+//		for (BoardCell doorway : doorways) {
+//			System.out.println("Row: " + doorway.getRow() + ", Col: " + doorway.getCol());
+//
+//			System.out.println(doorway.getCellLabel());
+//		}
+
+		// iterate through the gameboard
 		for (int i = 0; i < this.numRows; i++) {
 			for (int j = 0; j < this.numCols; j++) {
+
 				// get the boardcell
 				BoardCell b = this.board.get(i).get(j);
 
 				Room r = this.roomMap.get(b.getCellLabel());
 
-				// if the room is the center, set it so
-				if (b.getRoomCenter()) {
-					r.setCenter(b);
-				}
+				// If the cell is not 'Unused' then it needs adjacencies.
+				if (b.getCellLabel() != 'X') {
 
-				// if the room is the label, set it so
-				if (b.getRoomLabel()) {
-					r.setLabelCell(b);
-				}
+					// if the room is the center, set it
+					if (b.getRoomCenter()) {
+						r.setCenter(b);
+					} else if (b.getRoomLabel()) { // if the room is the label, set it, room labels have no adjacencies
+						r.setLabelCell(b);
+					} else if (b.getSecretPassage() != '\0') {
+						secretPaths.add(b);
+					} else {
 
-//		
+						// Check bounds for "normal cells"
+						if (i - 1 >= 0) {
+							BoardCell adj = this.board.get(i - 1).get(j);
+							this.processCell(b, adj);
+						}
+
+						if (i + 1 < this.numRows) {
+							BoardCell adj = this.board.get(i + 1).get(j);
+							this.processCell(b, adj);
+						}
+
+						if (j - 1 >= 0) {
+							BoardCell adj = this.board.get(i).get(j - 1);
+							this.processCell(b, adj);
+						}
+
+						if (j + 1 < this.numCols) {
+							BoardCell adj = this.board.get(i).get(j + 1);
+							this.processCell(b, adj);
+						}
+					}
+				}
 			}
 		}
 
+		BoardCell cc;
+		BoardCell sc;
+
+		// Add secret cell adjacencies from secretPaths list
+		for (BoardCell sp : secretPaths) {
+			cc = roomMap.get(sp.getCellLabel()).getCenter();
+			sc = roomMap.get(sp.getSecretPassage()).getCenter();
+			// System.out.println("PAIR IS: " + cc.getCellLabel() + ", " +
+			// sc.getCellLabel());
+			cc.addAdjacency(sc);
+			sc.addAdjacency(cc);
+		}
+
+		// Code for adding adjacencies from room center, secret path done at end.
+		for (BoardCell doorway : doorways) {
+
+			BoardCell checkedCell = new BoardCell(-1, -1);
+
+			if (doorway.getDoorDirection() == DoorDirection.UP) {
+				checkedCell = this.board.get(doorway.getRow() - 1).get(doorway.getCol());
+			}
+
+			else if (doorway.getDoorDirection() == DoorDirection.DOWN) {
+				checkedCell = this.board.get(doorway.getRow() + 1).get(doorway.getCol());
+			}
+
+			else if (doorway.getDoorDirection() == DoorDirection.LEFT) {
+				checkedCell = this.board.get(doorway.getRow()).get(doorway.getCol() - 1);
+			}
+
+			else if (doorway.getDoorDirection() == DoorDirection.RIGHT) {
+				checkedCell = this.board.get(doorway.getRow()).get(doorway.getCol() + 1);
+			}
+
+//			System.out.println(checkedCell.getCellLabel());
+//
+//			System.out.println("Cell name: " + this.board.get(doorway.getRow()).get(doorway.getCol()).getCellLabel()
+//					+ ", Row: " + doorway.getRow() + ", Col: " + doorway.getCol());
+//
+//			BoardCell up = this.board.get(doorway.getRow()).get(doorway.getCol() + 1);
+//			BoardCell down = this.board.get(doorway.getRow()).get(doorway.getCol() - 1);
+//			BoardCell left = this.board.get(doorway.getRow() - 1).get(doorway.getCol());
+//			BoardCell right = this.board.get(doorway.getRow() + 1).get(doorway.getCol());
+//
+//			System.out.println("Up: " + up.getCellLabel() + ", Down: " + down.getCellLabel() + ", Left: "
+//					+ left.getCellLabel() + ", Right: " + right.getCellLabel());
+
+			BoardCell roomCell = roomMap.get(checkedCell.getCellLabel()).getCenterCell();
+
+			if (checkedCell.getCellLabel() == roomCell.getCellLabel()) {
+				roomCell.addAdjacency(doorway);
+				checkedCell.addAdjacency(roomCell);
+			}
+
+		}
+	}
+
+	/*
+	 * Helper function for adding cell adjancies.
+	 */
+	private void processCell(BoardCell t, BoardCell adj) {
+		if (adj.getCellLabel() != 'X' && !roomMap.containsKey(adj.getCellLabel())) {
+			t.addAdjacency(adj);
+		}
 	}
 
 	/*
@@ -236,14 +374,12 @@ public class Board {
 	 */
 	public Room getRoom(char c) {
 		return roomMap.get(c);
-
 	}
 
 	/*
 	 * Get the number of rows in the file
 	 */
 	public int getNumRows() {
-
 		return this.numRows;
 	}
 
@@ -278,12 +414,10 @@ public class Board {
 	}
 
 	public Set<BoardCell> getAdjList(int i, int j) {
-		// TODO Auto-generated method stub
-		return new HashSet();
+		return board.get(i).get(j).getAdjList();
 	}
 
 	public Set<BoardCell> getTargets() {
-		// TODO Auto-generated method stub
 		return new HashSet();
 	}
 
