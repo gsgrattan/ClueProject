@@ -354,7 +354,7 @@ public class Board {
 
 			if (checkedCell.getCellLabel() == roomCell.getCellLabel()) {
 				roomCell.addAdjacency(doorway);
-				checkedCell.addAdjacency(roomCell);
+				doorway.addAdjacency(roomCell);
 			}
 
 		}
@@ -364,7 +364,7 @@ public class Board {
 	 * Helper function for adding cell adjancies.
 	 */
 	private void processCell(BoardCell t, BoardCell adj) {
-		if (adj.getCellLabel() != 'X' && !roomMap.containsKey(adj.getCellLabel())) {
+		if (adj.getCellLabel() != 'X' && !roomMap.get(adj.getCellLabel()).getIsRoom()) {
 			t.addAdjacency(adj);
 		}
 	}
