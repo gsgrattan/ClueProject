@@ -273,8 +273,8 @@ public class Board {
 
 		// Add secret cell adjacencies from secretPaths list
 		for (BoardCell sp : secretPaths) {
-			cc = roomMap.get(sp.getCellLabel()).getCenter();
-			sc = roomMap.get(sp.getSecretPassage()).getCenter();
+			cc = roomMap.get(sp.getCellLabel()).getCenterCell();
+			sc = roomMap.get(sp.getSecretPassage()).getCenterCell();
 			cc.addAdjacency(sc);
 			sc.addAdjacency(cc);
 		}

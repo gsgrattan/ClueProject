@@ -14,13 +14,6 @@ public class Room {
 	}
 
 	/*
-	 * Get the center cell of the room
-	 */
-	public BoardCell getCenter() {
-		return center;
-	}
-
-	/*
 	 * Set the center cell of the room
 	 */
 	public void setCenter(BoardCell center) {
