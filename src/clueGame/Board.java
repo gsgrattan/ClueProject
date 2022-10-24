@@ -15,7 +15,7 @@ public class Board {
 	/*
 	 * variable and methods used for singleton pattern
 	 */
-	 
+
 	private int numRows;
 	private int numCols = -1;
 	private int numRooms = 0;
@@ -90,7 +90,6 @@ public class Board {
 		Scanner reader = new Scanner(set);
 		while (reader.hasNextLine()) {
 			String data = reader.nextLine();
-
 			if (!data.substring(0, 2).equals("//") && !data.equals("\n")) {
 
 				String[] splitData = data.split(", ");
@@ -118,8 +117,6 @@ public class Board {
 	 * Load the playing board.
 	 */
 	public void loadLayoutConfig() throws FileNotFoundException, BadConfigFormatException {
-
-		// System.out.println("\n\n\nSTART OF OUTPUT:");
 
 		File lay = new File("data/" + this.layout);
 		Scanner reader = new Scanner(lay);
@@ -268,6 +265,10 @@ public class Board {
 			}
 		}
 
+		addSecretPassageAdjacencies(secretPaths);
+	}
+
+	private void addSecretPassageAdjacencies(ArrayList<BoardCell> secretPaths) {
 		BoardCell cc;
 		BoardCell sc;
 
