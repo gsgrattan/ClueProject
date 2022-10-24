@@ -27,7 +27,7 @@ public class BoardCell {
 
 	}
 
-//Get the label
+	// Get the label
 	public char getCellLabel() {
 		return cellLabel;
 	}
@@ -78,10 +78,12 @@ public class BoardCell {
 		return this.isDoorway;
 	}
 
+	// Get the row of the BoardCell
 	public int getRow() {
 		return row;
 	}
 
+	// Get the col of the BoardCell
 	public int getCol() {
 		return col;
 	}

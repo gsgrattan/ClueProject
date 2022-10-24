@@ -274,8 +274,8 @@ public class Board {
 
 		// Add secret cell adjacencies from secretPaths list
 		for (BoardCell sp : secretPaths) {
-			cc = roomMap.get(sp.getCellLabel()).getCenter();
-			sc = roomMap.get(sp.getSecretPassage()).getCenter();
+			cc = roomMap.get(sp.getCellLabel()).getCenterCell();
+			sc = roomMap.get(sp.getSecretPassage()).getCenterCell();
 			cc.addAdjacency(sc);
 			sc.addAdjacency(cc);
 		}
@@ -350,7 +350,6 @@ public class Board {
 	/*
 	 * get a specific cell specified by (row, column)
 	 */
-
 	public BoardCell getCell(int row, int col) {
 		return board.get(row).get(col);
 	}
@@ -363,19 +362,35 @@ public class Board {
 		return this.roomMap.get(label);
 	}
 
+	/*
+	 * Return the adjacency list of the boardCell at (i, j)
+	 */
 	public Set<BoardCell> getAdjList(int i, int j) {
 		return board.get(i).get(j).getAdjList();
 	}
 
+	/*
+	 * get the targets stored in the Set of targets
+	 */
 	public Set<BoardCell> getTargets() {
 		return this.targets;
 	}
 
+	/*
+	 * Caller function for calcTargets(BoardCell startCell, int pathlength, int
+	 * maxpath, Set<BoardCell> visited), but this one is shorter and more human
+	 * readable.
+	 */
 	public void calcTargets(BoardCell startCell, int pathlength) {
 		targets = new HashSet<BoardCell>();
 		this.calcTargets(startCell, pathlength, pathlength, new HashSet<BoardCell>());
 	}
 
+	/*
+	 * Calculate all the targets and add them to the adjacency list, this method is
+	 * private because it is called by the public one above which is used as a
+	 * "setup" function.
+	 */
 	private void calcTargets(BoardCell startCell, int pathlength, int maxpath, Set<BoardCell> visited) {
 		if (visited.isEmpty()) {
 			visited.add(startCell);
