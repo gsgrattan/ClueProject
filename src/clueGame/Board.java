@@ -169,6 +169,9 @@ public class Board {
 
 					// System.out.println(cell);
 
+					// TODO: reformat these logical statements to clean up the code, potentially
+					// adding a helper function into the BoardCell class.
+
 					b.setCellLabel(cell.charAt(0));
 					char specialOperation = cell.charAt(1);
 
@@ -242,23 +245,6 @@ public class Board {
 		this.numRows = rows;
 
 		ArrayList<BoardCell> secretPaths = new ArrayList<BoardCell>();
-
-		// System.out.println("");
-
-//		for (int i = 0; i < this.numRows; i++) {
-//			for (int j = 0; j < this.numCols; j++) {
-//				BoardCell b = this.board.get(i).get(j);
-//
-//				System.out.print("" + b.getCellLabel() + ", ");
-//			}
-//			System.out.println("");
-//		}
-
-//		for (BoardCell doorway : doorways) {
-//			System.out.println("Row: " + doorway.getRow() + ", Col: " + doorway.getCol());
-//
-//			System.out.println(doorway.getCellLabel());
-//		}
 
 		// iterate through the gameboard
 		for (int i = 0; i < this.numRows; i++) {
@@ -340,19 +326,6 @@ public class Board {
 				checkedCell = this.board.get(doorway.getRow()).get(doorway.getCol() + 1);
 			}
 
-//			System.out.println(checkedCell.getCellLabel());
-//
-//			System.out.println("Cell name: " + this.board.get(doorway.getRow()).get(doorway.getCol()).getCellLabel()
-//					+ ", Row: " + doorway.getRow() + ", Col: " + doorway.getCol());
-//
-//			BoardCell up = this.board.get(doorway.getRow()).get(doorway.getCol() + 1);
-//			BoardCell down = this.board.get(doorway.getRow()).get(doorway.getCol() - 1);
-//			BoardCell left = this.board.get(doorway.getRow() - 1).get(doorway.getCol());
-//			BoardCell right = this.board.get(doorway.getRow() + 1).get(doorway.getCol());
-//
-//			System.out.println("Up: " + up.getCellLabel() + ", Down: " + down.getCellLabel() + ", Left: "
-//					+ left.getCellLabel() + ", Right: " + right.getCellLabel());
-
 			BoardCell roomCell = roomMap.get(checkedCell.getCellLabel()).getCenterCell();
 
 			if (checkedCell.getCellLabel() == roomCell.getCellLabel()) {
@@ -431,10 +404,6 @@ public class Board {
 		targets = new HashSet<BoardCell>();
 		this.calcTargets(startCell, pathlength, pathlength, new HashSet<BoardCell>());
 
-//		for (BoardCell t : targets) {
-//			System.out.println("Row: " + t.getRow() + ", Col: " + t.getCol());
-//		}
-
 	}
 
 	private void calcTargets(BoardCell startCell, int pathlength, int maxpath, Set<BoardCell> visited) {
@@ -445,15 +414,10 @@ public class Board {
 		if (pathlength == 0 || (startCell.isRoomCenter() && maxpath != pathlength)) {
 			targets.add(startCell);
 
-//			System.out.println("FINAL CELL, Row: " + startCell.getRow() + ", Col: " + startCell.getCol() + "\n");
-
 		} else {
 			for (BoardCell cell : startCell.getAdjList()) {
 
 				if ((cell.isRoomCenter() || !cell.getOccupied()) && !visited.contains(cell)) {
-
-//					System.out.println("Row: " + startCell.getRow() + ", Col: " + startCell.getCol() + " TO " + "Row: "
-//							+ cell.getRow() + ", Col: " + cell.getCol());
 
 					visited.add(cell);
 					calcTargets(cell, pathlength - 1, maxpath, visited);
