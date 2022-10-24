@@ -28,6 +28,7 @@ public class Board {
 	private List<List<BoardCell>> board;
 	private Map<Character, Room> roomMap;
 	private Set<BoardCell> targets;
+	private ArrayList<BoardCell> doorways;
 
 	// constructor is private to ensure only one can be created
 	private Board() {
@@ -69,6 +70,7 @@ public class Board {
 			System.out.println("Bad Config: Invalid Character in Layout");
 			e.printStackTrace();
 		}
+		this.initializeAdjacencies();
 	}
 
 	/*
@@ -126,7 +128,7 @@ public class Board {
 		File lay = new File("data/" + this.layout);
 		Scanner reader = new Scanner(lay);
 
-		ArrayList<BoardCell> doorways = new ArrayList<BoardCell>();
+		this.doorways = new ArrayList<BoardCell>();
 
 		int rows = 0;
 		int cols = 0;
@@ -146,7 +148,7 @@ public class Board {
 			}
 
 			// create the array for the row
-			ArrayList<BoardCell> r = new ArrayList<BoardCell>(cols);
+			ArrayList<BoardCell> row = new ArrayList<BoardCell>(cols);
 
 			// iterate through the split data
 			int col = 0;
@@ -158,17 +160,12 @@ public class Board {
 				if (!roomMap.containsKey(cell.charAt(0))) {
 					throw new BadConfigFormatException();
 				}
-
 				// If the cell is a normal cell, just a label
 				if (cell.length() == 1) {
-
 					b.setCellLabel(cell.charAt(0));
 
 					// if the cell has some spectial operation
 				} else if (cell.length() == 2) {
-
-					// System.out.println(cell);
-
 					// TODO: reformat these logical statements to clean up the code, potentially
 					// adding a helper function into the BoardCell class.
 
@@ -200,23 +197,17 @@ public class Board {
 						// set the room center
 					} else if (specialOperation == '*') {
 						b.setRoomCenter(true);
+					} else if (roomMap.containsKey(specialOperation)) {
+						// else if the value is another room, then it's a secret passage
+						b.setSecretPassage(specialOperation);
 					} else {
-						// else it's a secret passage or an error
-						if (roomMap.containsKey(specialOperation)) {
-							b.setSecretPassage(specialOperation);
-						} else {
-							throw new BadConfigFormatException();
-						}
+						// Else there is an error and it's a bad config
+						throw new BadConfigFormatException();
 					}
 				}
-				r.add(b);
-
-				// System.out.println(b.getCellLabel());
+				row.add(b);
 
 				if (b.isDoorway()) {
-					// System.out.println("This is a doorway. Row: " + b.getRow() + ", Col: " +
-					// b.getCol());
-
 					doorways.add(b);
 				}
 
@@ -231,7 +222,7 @@ public class Board {
 				}
 			}
 			// add the row
-			this.board.add(r);
+			this.board.add(row);
 
 			// increment the row
 			rows++;
@@ -243,6 +234,9 @@ public class Board {
 		reader.close();
 
 		this.numRows = rows;
+	}
+
+	private void initializeAdjacencies() {
 
 		ArrayList<BoardCell> secretPaths = new ArrayList<BoardCell>();
 
@@ -253,16 +247,16 @@ public class Board {
 				// get the boardcell
 				BoardCell b = this.board.get(i).get(j);
 
-				Room r = this.roomMap.get(b.getCellLabel());
+				Room room = this.roomMap.get(b.getCellLabel());
 
 				// If the cell is not 'Unused' then it needs adjacencies.
 				if (b.getCellLabel() != 'X') {
 
 					// if the room is the center, set it
 					if (b.getRoomCenter()) {
-						r.setCenter(b);
+						room.setCenter(b);
 					} else if (b.getRoomLabel()) { // if the room is the label, set it, room labels have no adjacencies
-						r.setLabelCell(b);
+						room.setLabelCell(b);
 					} else if (b.getSecretPassage() != '\0') {
 						secretPaths.add(b);
 					} else {
@@ -306,7 +300,7 @@ public class Board {
 		}
 
 		// Code for adding adjacencies from room center, secret path done at end.
-		for (BoardCell doorway : doorways) {
+		for (BoardCell doorway : this.doorways) {
 
 			BoardCell checkedCell = new BoardCell(-1, -1);
 
