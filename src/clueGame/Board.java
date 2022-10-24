@@ -51,22 +51,22 @@ public class Board {
 
 		try {
 			this.loadSetupConfig();
-		} catch (FileNotFoundException e) {
+		} catch (FileNotFoundException error) {
 			System.out.println("File Not Found");
 
-		} catch (BadConfigFormatException e) {
+		} catch (BadConfigFormatException error) {
 			System.out.println("Bad Config: Invalid Character in Setup");
-			e.printStackTrace();
+			error.printStackTrace();
 		}
 
 		try {
 			this.loadLayoutConfig();
-		} catch (FileNotFoundException e) {
+		} catch (FileNotFoundException error) {
 			System.out.println("File Not Found");
 
-		} catch (BadConfigFormatException e) {
+		} catch (BadConfigFormatException error) {
 			System.out.println("Bad Config: Invalid Character in Layout");
-			e.printStackTrace();
+			error.printStackTrace();
 		}
 		this.initializeAdjacencies();
 	}
@@ -149,7 +149,7 @@ public class Board {
 			// iterate through the split data
 			int colIndex = 0;
 			for (String cell : splitData) {
-				BoardCell b = new BoardCell(rowIndex, colIndex);
+				BoardCell currentCell = new BoardCell(rowIndex, colIndex);
 				colIndex++;
 
 				// if the room label is not valid throw an Exception
@@ -158,46 +158,46 @@ public class Board {
 				}
 				// If the cell is a normal cell, just a label
 				if (cell.length() == 1) {
-					b.setCellLabel(cell.charAt(0));
+					currentCell.setCellLabel(cell.charAt(0));
 
 					// if the cell has some special operation
 				} else if (cell.length() == 2) {
-					b.setCellLabel(cell.charAt(0));
+					currentCell.setCellLabel(cell.charAt(0));
 					char specialOperation = cell.charAt(1);
 
 					DoorDirection direction;
 					// set the door direction
 					if (specialOperation == '^') {
 						direction = DoorDirection.UP;
-						b.setDoorDirection(direction);
+						currentCell.setDoorDirection(direction);
 					} else if (specialOperation == '>') {
 						direction = DoorDirection.RIGHT;
-						b.setDoorDirection(direction);
+						currentCell.setDoorDirection(direction);
 					} else if (specialOperation == '<') {
 						direction = DoorDirection.LEFT;
-						b.setDoorDirection(direction);
+						currentCell.setDoorDirection(direction);
 					} else if (specialOperation == 'v') {
 						direction = DoorDirection.DOWN;
-						b.setDoorDirection(direction);
+						currentCell.setDoorDirection(direction);
 					}
 					// set the room label
 					else if (specialOperation == '#') {
-						b.setRoomLabel(true);
+						currentCell.setRoomLabel(true);
 						// set the room center
 					} else if (specialOperation == '*') {
-						b.setRoomCenter(true);
+						currentCell.setRoomCenter(true);
 					} else if (roomMap.containsKey(specialOperation)) {
 						// else if the value is another room, then it's a secret passage
-						b.setSecretPassage(specialOperation);
+						currentCell.setSecretPassage(specialOperation);
 					} else {
 						// Else there is an error and it's a bad config
 						throw new BadConfigFormatException();
 					}
 				}
-				row.add(b);
+				row.add(currentCell);
 
-				if (b.isDoorway()) {
-					this.doorways.add(b);
+				if (currentCell.isDoorway()) {
+					this.doorways.add(currentCell);
 				}
 
 			}
@@ -220,45 +220,46 @@ public class Board {
 		ArrayList<BoardCell> secretPaths = new ArrayList<BoardCell>();
 
 		// iterate through the gameboard
-		for (int i = 0; i < this.numRows; i++) {
-			for (int j = 0; j < this.numCols; j++) {
+		for (int rowIndex = 0; rowIndex < this.numRows; rowIndex++) {
+			for (int colIndex = 0; colIndex < this.numCols; colIndex++) {
 
 				// get the boardcell
-				BoardCell b = this.board.get(i).get(j);
+				BoardCell currentCell = this.board.get(rowIndex).get(colIndex);
 
-				Room room = this.roomMap.get(b.getCellLabel());
+				Room room = this.roomMap.get(currentCell.getCellLabel());
 
 				// If the cell is not 'Unused' then it needs adjacencies.
-				if (b.getCellLabel() != 'X') {
+				if (currentCell.getCellLabel() != 'X') {
 
 					// if the room is the center, set it
-					if (b.getRoomCenter()) {
-						room.setCenter(b);
-					} else if (b.getRoomLabel()) { // if the room is the label, set it, room labels have no adjacencies
-						room.setLabelCell(b);
-					} else if (b.getSecretPassage() != '\0') {
-						secretPaths.add(b);
+					if (currentCell.getRoomCenter()) {
+						room.setCenter(currentCell);
+					} else if (currentCell.getRoomLabel()) { // if the room is the label, set it, room labels have no
+																// adjacencies
+						room.setLabelCell(currentCell);
+					} else if (currentCell.getSecretPassage() != '\0') {
+						secretPaths.add(currentCell);
 					} else {
 
 						// Check bounds for "normal cells"
-						if (i - 1 >= 0) {
-							BoardCell adj = this.board.get(i - 1).get(j);
-							this.processCell(b, adj);
+						if (rowIndex - 1 >= 0) {
+							BoardCell adj = this.board.get(rowIndex - 1).get(colIndex);
+							this.processCell(currentCell, adj);
 						}
 
-						if (i + 1 < this.numRows) {
-							BoardCell adj = this.board.get(i + 1).get(j);
-							this.processCell(b, adj);
+						if (rowIndex + 1 < this.numRows) {
+							BoardCell adj = this.board.get(rowIndex + 1).get(colIndex);
+							this.processCell(currentCell, adj);
 						}
 
-						if (j - 1 >= 0) {
-							BoardCell adj = this.board.get(i).get(j - 1);
-							this.processCell(b, adj);
+						if (colIndex - 1 >= 0) {
+							BoardCell adj = this.board.get(rowIndex).get(colIndex - 1);
+							this.processCell(currentCell, adj);
 						}
 
-						if (j + 1 < this.numCols) {
-							BoardCell adj = this.board.get(i).get(j + 1);
-							this.processCell(b, adj);
+						if (colIndex + 1 < this.numCols) {
+							BoardCell adj = this.board.get(rowIndex).get(colIndex + 1);
+							this.processCell(currentCell, adj);
 						}
 					}
 				}
@@ -269,15 +270,15 @@ public class Board {
 	}
 
 	private void addSecretPassageAdjacencies(ArrayList<BoardCell> secretPaths) {
-		BoardCell cc;
-		BoardCell sc;
+		BoardCell centerCell;
+		BoardCell secretCell;
 
 		// Add secret cell adjacencies from secretPaths list
 		for (BoardCell sp : secretPaths) {
-			cc = roomMap.get(sp.getCellLabel()).getCenterCell();
-			sc = roomMap.get(sp.getSecretPassage()).getCenterCell();
-			cc.addAdjacency(sc);
-			sc.addAdjacency(cc);
+			centerCell = roomMap.get(sp.getCellLabel()).getCenterCell();
+			secretCell = roomMap.get(sp.getSecretPassage()).getCenterCell();
+			centerCell.addAdjacency(secretCell);
+			secretCell.addAdjacency(centerCell);
 		}
 
 		// Code for adding adjacencies from room center, secret path done at end.
