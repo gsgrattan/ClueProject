@@ -130,7 +130,7 @@ public class Board {
 
 		this.doorways = new ArrayList<BoardCell>();
 
-		int rows = 0;
+		int rowIndex = 0;
 		int cols = 0;
 
 		// Iterate through each row of the csv and thus each row of the board
@@ -142,19 +142,22 @@ public class Board {
 
 			cols = splitData.length;
 
-			// Set the number of columns of the forst pass through
-			if (numCols == -1) {
-				numCols = cols;
+			// If the number of Columns hasn't been set
+			if (this.numCols == -1) {
+				this.numCols = cols;
+			} else if (cols != this.numCols) {
+				// if the number of columns varies, then we have a bad configuration
+				throw new BadConfigFormatException();
 			}
 
 			// create the array for the row
 			ArrayList<BoardCell> row = new ArrayList<BoardCell>(cols);
 
 			// iterate through the split data
-			int col = 0;
+			int colIndex = 0;
 			for (String cell : splitData) {
-				BoardCell b = new BoardCell(rows, col);
-				col++;
+				BoardCell b = new BoardCell(rowIndex, colIndex);
+				colIndex++;
 
 				// if the room label is not valid throw an Exception
 				if (!roomMap.containsKey(cell.charAt(0))) {
@@ -164,7 +167,7 @@ public class Board {
 				if (cell.length() == 1) {
 					b.setCellLabel(cell.charAt(0));
 
-					// if the cell has some spectial operation
+					// if the cell has some special operation
 				} else if (cell.length() == 2) {
 					// TODO: reformat these logical statements to clean up the code, potentially
 					// adding a helper function into the BoardCell class.
@@ -208,32 +211,22 @@ public class Board {
 				row.add(b);
 
 				if (b.isDoorway()) {
-					doorways.add(b);
+					this.doorways.add(b);
 				}
 
 			}
 
-			// if the board size has been set/ initialized
-			if (this.board.size() != 0) {
-				// assert that it has the correct number of columns, if it doesn't, throw an
-				// exception
-				if (cols != this.numCols) {
-					throw new BadConfigFormatException();
-				}
-			}
 			// add the row
 			this.board.add(row);
 
 			// increment the row
-			rows++;
+			rowIndex++;
 
-			// reset the column
-			cols = 0;
 		}
-
+		// Close the file
 		reader.close();
-
-		this.numRows = rows;
+		// Set the number of rows
+		this.numRows = rowIndex;
 	}
 
 	private void initializeAdjacencies() {
@@ -326,7 +319,6 @@ public class Board {
 				roomCell.addAdjacency(doorway);
 				doorway.addAdjacency(roomCell);
 			}
-
 		}
 	}
 
