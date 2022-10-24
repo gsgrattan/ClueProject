@@ -10,14 +10,12 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 
-// I'm gonna be honest, this is not a great singleton at all.
 public class Board {
 
 	/*
 	 * variable and methods used for singleton pattern
 	 */
-
-	// TODO: Switch rows and columns becuase they are backwards right now.
+	 
 	private int numRows;
 	private int numCols = -1;
 	private int numRooms = 0;
@@ -78,10 +76,8 @@ public class Board {
 	 */
 
 	public void setConfigFiles(String layout, String setup) {
-		// TODO Auto-generated method stub
 		this.layout = layout;
 		this.setup = setup;
-
 	}
 
 	/*
@@ -169,9 +165,6 @@ public class Board {
 
 					// if the cell has some special operation
 				} else if (cell.length() == 2) {
-					// TODO: reformat these logical statements to clean up the code, potentially
-					// adding a helper function into the BoardCell class.
-
 					b.setCellLabel(cell.charAt(0));
 					char specialOperation = cell.charAt(1);
 
@@ -180,19 +173,15 @@ public class Board {
 					if (specialOperation == '^') {
 						direction = DoorDirection.UP;
 						b.setDoorDirection(direction);
-						// doorways.add(b);
 					} else if (specialOperation == '>') {
 						direction = DoorDirection.RIGHT;
 						b.setDoorDirection(direction);
-						// doorways.add(b);
 					} else if (specialOperation == '<') {
 						direction = DoorDirection.LEFT;
 						b.setDoorDirection(direction);
-						// doorways.add(b);
 					} else if (specialOperation == 'v') {
 						direction = DoorDirection.DOWN;
 						b.setDoorDirection(direction);
-						// doorways.add(b);
 					}
 					// set the room label
 					else if (specialOperation == '#') {
@@ -286,8 +275,6 @@ public class Board {
 		for (BoardCell sp : secretPaths) {
 			cc = roomMap.get(sp.getCellLabel()).getCenter();
 			sc = roomMap.get(sp.getSecretPassage()).getCenter();
-			// System.out.println("PAIR IS: " + cc.getCellLabel() + ", " +
-			// sc.getCellLabel());
 			cc.addAdjacency(sc);
 			sc.addAdjacency(cc);
 		}
@@ -384,12 +371,8 @@ public class Board {
 	}
 
 	public void calcTargets(BoardCell startCell, int pathlength) {
-
-//		System.out.println("\nNew targets generated\n");
-
 		targets = new HashSet<BoardCell>();
 		this.calcTargets(startCell, pathlength, pathlength, new HashSet<BoardCell>());
-
 	}
 
 	private void calcTargets(BoardCell startCell, int pathlength, int maxpath, Set<BoardCell> visited) {
@@ -402,9 +385,7 @@ public class Board {
 
 		} else {
 			for (BoardCell cell : startCell.getAdjList()) {
-
 				if ((cell.isRoomCenter() || !cell.getOccupied()) && !visited.contains(cell)) {
-
 					visited.add(cell);
 					calcTargets(cell, pathlength - 1, maxpath, visited);
 					visited.remove(cell);
