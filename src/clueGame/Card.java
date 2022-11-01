@@ -1,8 +1,8 @@
 package clueGame;
 
 public class Card {
-	String cardName;
-	CardType type;
+	private String cardName;
+	private CardType type;
 
 	public Card(String cardName) {
 		this.cardName = cardName;
@@ -12,6 +12,10 @@ public class Card {
 	public boolean equals(Card target) {
 		// Compare the strings values (Not addresses)
 		return (this.cardName.equals(target.cardName));
+	}
+
+	public CardType getCardType() {
+		return this.type;
 	}
 
 }

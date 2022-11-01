@@ -14,4 +14,8 @@ public abstract class Player {
 		this.hand.add(card);
 	}
 
+	public int getHandSize() {
+		return hand.size();
+	}
+
 }

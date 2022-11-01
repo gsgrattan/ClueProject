@@ -411,4 +411,34 @@ public class Board {
 		}
 	}
 
+	public ArrayList<Player> getPlayers() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ArrayList<Player> getHumanPlayers() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ArrayList<Player> getCpuPlayers() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ArrayList<Card> getDeck() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ArrayList<Card> getSolution() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void deal() {
+		// TODO Auto-generated method stub
+
+	}
+
 }
