@@ -1,0 +1,636 @@
+I, George Grattan, certify that I participated equitably in the creation of assignment C17A-2, dated 10/24/2022
+I, Hunter Thompson, certify that I participated equitably in the creation of this assignment C17A-2, dated 10/24/2022.
+
+diff --git a/src/clueGame/Board.java b/src/clueGame/Board.java
+index 2ba545e..26f2e00 100644
+--- a/src/clueGame/Board.java
++++ b/src/clueGame/Board.java
+@@ -28,6 +28,7 @@ public class Board {
+ 	private List<List<BoardCell>> board;
+ 	private Map<Character, Room> roomMap;
+ 	private Set<BoardCell> targets;
++	private ArrayList<BoardCell> doorways;
+ 
+ 	// constructor is private to ensure only one can be created
+ 	private Board() {
+@@ -69,6 +70,7 @@ public class Board {
+ 			System.out.println("Bad Config: Invalid Character in Layout");
+ 			e.printStackTrace();
+ 		}
++		this.initializeAdjacencies();
+ 	}
+ 
+ 	/*
+@@ -126,9 +128,9 @@ public class Board {
+ 		File lay = new File("data/" + this.layout);
+ 		Scanner reader = new Scanner(lay);
+ 
+-		ArrayList<BoardCell> doorways = new ArrayList<BoardCell>();
++		this.doorways = new ArrayList<BoardCell>();
+ 
+-		int rows = 0;
++		int rowIndex = 0;
+ 		int cols = 0;
+ 
+ 		// Iterate through each row of the csv and thus each row of the board
+@@ -140,34 +142,35 @@ public class Board {
+ 
+ 			cols = splitData.length;
+ 
+-			// Set the number of columns of the forst pass through
+-			if (numCols == -1) {
+-				numCols = cols;
++			// If the number of Columns hasn't been set
++			if (this.numCols == -1) {
++				this.numCols = cols;
++			} else if (cols != this.numCols) {
++				// if the number of columns varies, then we have a bad configuration
++				throw new BadConfigFormatException();
+ 			}
+ 
+ 			// create the array for the row
+-			ArrayList<BoardCell> r = new ArrayList<BoardCell>(cols);
++			ArrayList<BoardCell> row = new ArrayList<BoardCell>(cols);
+ 
+ 			// iterate through the split data
+-			int col = 0;
++			int colIndex = 0;
+ 			for (String cell : splitData) {
+-				BoardCell b = new BoardCell(rows, col);
+-				col++;
++				BoardCell b = new BoardCell(rowIndex, colIndex);
++				colIndex++;
+ 
+ 				// if the room label is not valid throw an Exception
+ 				if (!roomMap.containsKey(cell.charAt(0))) {
+ 					throw new BadConfigFormatException();
+ 				}
+-
+ 				// If the cell is a normal cell, just a label
+ 				if (cell.length() == 1) {
+-
+ 					b.setCellLabel(cell.charAt(0));
+ 
+-					// if the cell has some spectial operation
++					// if the cell has some special operation
+ 				} else if (cell.length() == 2) {
+-
+-					// System.out.println(cell);
++					// TODO: reformat these logical statements to clean up the code, potentially
++					// adding a helper function into the BoardCell class.
+ 
+ 					b.setCellLabel(cell.charAt(0));
+ 					char specialOperation = cell.charAt(1);
+@@ -197,69 +200,39 @@ public class Board {
+ 						// set the room center
+ 					} else if (specialOperation == '*') {
+ 						b.setRoomCenter(true);
++					} else if (roomMap.containsKey(specialOperation)) {
++						// else if the value is another room, then it's a secret passage
++						b.setSecretPassage(specialOperation);
+ 					} else {
+-						// else it's a secret passage or an error
+-						if (roomMap.containsKey(specialOperation)) {
+-							b.setSecretPassage(specialOperation);
+-						} else {
+-							throw new BadConfigFormatException();
+-						}
++						// Else there is an error and it's a bad config
++						throw new BadConfigFormatException();
+ 					}
+ 				}
+-				r.add(b);
+-
+-				// System.out.println(b.getCellLabel());
++				row.add(b);
+ 
+ 				if (b.isDoorway()) {
+-					// System.out.println("This is a doorway. Row: " + b.getRow() + ", Col: " +
+-					// b.getCol());
+-
+-					doorways.add(b);
++					this.doorways.add(b);
+ 				}
+ 
+ 			}
+ 
+-			// if the board size has been set/ initialized
+-			if (this.board.size() != 0) {
+-				// assert that it has the correct number of columns, if it doesn't, throw an
+-				// exception
+-				if (cols != this.numCols) {
+-					throw new BadConfigFormatException();
+-				}
+-			}
+ 			// add the row
+-			this.board.add(r);
++			this.board.add(row);
+ 
+ 			// increment the row
+-			rows++;
++			rowIndex++;
+ 
+-			// reset the column
+-			cols = 0;
+ 		}
+-
++		// Close the file
+ 		reader.close();
++		// Set the number of rows
++		this.numRows = rowIndex;
++	}
+ 
+-		this.numRows = rows;
++	private void initializeAdjacencies() {
+ 
+ 		ArrayList<BoardCell> secretPaths = new ArrayList<BoardCell>();
+ 
+-		// System.out.println("");
+-
+-//		for (int i = 0; i < this.numRows; i++) {
+-//			for (int j = 0; j < this.numCols; j++) {
+-//				BoardCell b = this.board.get(i).get(j);
+-//
+-//				System.out.print("" + b.getCellLabel() + ", ");
+-//			}
+-//			System.out.println("");
+-//		}
+-
+-//		for (BoardCell doorway : doorways) {
+-//			System.out.println("Row: " + doorway.getRow() + ", Col: " + doorway.getCol());
+-//
+-//			System.out.println(doorway.getCellLabel());
+-//		}
+-
+ 		// iterate through the gameboard
+ 		for (int i = 0; i < this.numRows; i++) {
+ 			for (int j = 0; j < this.numCols; j++) {
+@@ -267,16 +240,16 @@ public class Board {
+ 				// get the boardcell
+ 				BoardCell b = this.board.get(i).get(j);
+ 
+-				Room r = this.roomMap.get(b.getCellLabel());
++				Room room = this.roomMap.get(b.getCellLabel());
+ 
+ 				// If the cell is not 'Unused' then it needs adjacencies.
+ 				if (b.getCellLabel() != 'X') {
+ 
+ 					// if the room is the center, set it
+ 					if (b.getRoomCenter()) {
+-						r.setCenter(b);
++						room.setCenter(b);
+ 					} else if (b.getRoomLabel()) { // if the room is the label, set it, room labels have no adjacencies
+-						r.setLabelCell(b);
++						room.setLabelCell(b);
+ 					} else if (b.getSecretPassage() != '\0') {
+ 						secretPaths.add(b);
+ 					} else {
+@@ -320,7 +293,7 @@ public class Board {
+ 		}
+ 
+ 		// Code for adding adjacencies from room center, secret path done at end.
+-		for (BoardCell doorway : doorways) {
++		for (BoardCell doorway : this.doorways) {
+ 
+ 			BoardCell checkedCell = new BoardCell(-1, -1);
+ 
+@@ -340,26 +313,12 @@ public class Board {
+ 				checkedCell = this.board.get(doorway.getRow()).get(doorway.getCol() + 1);
+ 			}
+ 
+-//			System.out.println(checkedCell.getCellLabel());
+-//
+-//			System.out.println("Cell name: " + this.board.get(doorway.getRow()).get(doorway.getCol()).getCellLabel()
+-//					+ ", Row: " + doorway.getRow() + ", Col: " + doorway.getCol());
+-//
+-//			BoardCell up = this.board.get(doorway.getRow()).get(doorway.getCol() + 1);
+-//			BoardCell down = this.board.get(doorway.getRow()).get(doorway.getCol() - 1);
+-//			BoardCell left = this.board.get(doorway.getRow() - 1).get(doorway.getCol());
+-//			BoardCell right = this.board.get(doorway.getRow() + 1).get(doorway.getCol());
+-//
+-//			System.out.println("Up: " + up.getCellLabel() + ", Down: " + down.getCellLabel() + ", Left: "
+-//					+ left.getCellLabel() + ", Right: " + right.getCellLabel());
+-
+ 			BoardCell roomCell = roomMap.get(checkedCell.getCellLabel()).getCenterCell();
+ 
+ 			if (checkedCell.getCellLabel() == roomCell.getCellLabel()) {
+ 				roomCell.addAdjacency(doorway);
+ 				doorway.addAdjacency(roomCell);
+ 			}
+-
+ 		}
+ 	}
+ 
+@@ -431,10 +390,6 @@ public class Board {
+ 		targets = new HashSet<BoardCell>();
+ 		this.calcTargets(startCell, pathlength, pathlength, new HashSet<BoardCell>());
+ 
+-//		for (BoardCell t : targets) {
+-//			System.out.println("Row: " + t.getRow() + ", Col: " + t.getCol());
+-//		}
+-
+ 	}
+ 
+ 	private void calcTargets(BoardCell startCell, int pathlength, int maxpath, Set<BoardCell> visited) {
+@@ -445,16 +400,11 @@ public class Board {
+ 		if (pathlength == 0 || (startCell.isRoomCenter() && maxpath != pathlength)) {
+ 			targets.add(startCell);
+ 
+-//			System.out.println("FINAL CELL, Row: " + startCell.getRow() + ", Col: " + startCell.getCol() + "\n");
+-
+ 		} else {
+ 			for (BoardCell cell : startCell.getAdjList()) {
+ 
+ 				if ((cell.isRoomCenter() || !cell.getOccupied()) && !visited.contains(cell)) {
+ 
+-//					System.out.println("Row: " + startCell.getRow() + ", Col: " + startCell.getCol() + " TO " + "Row: "
+-//							+ cell.getRow() + ", Col: " + cell.getCol());
+-
+ 					visited.add(cell);
+ 					calcTargets(cell, pathlength - 1, maxpath, visited);
+ 					visited.remove(cell);
+commit 23dfe36a4c3f3f39e07ae21f5098a8c7cce39160
+Author: gsgrattan <gsgrattan@gmail.com>
+Date:   Mon Oct 24 16:16:24 2022 -0600
+
+    Renamed some variables to make code more readable
+
+commit d594de602f54a3909c038931a9454232d3ba3fea
+Merge: 5c3cfbf fc05c8b
+Author: gsgrattan <gsgrattan@gmail.com>
+Date:   Mon Oct 24 16:02:03 2022 -0600
+
+    Merge branch 'main' of github.com:gsgrattan/ClueProject into main
+
+commit 5c3cfbf825fd8f02d1ece8804d5e50ff7000101b
+Author: gsgrattan <gsgrattan@gmail.com>
+Date:   Mon Oct 24 16:01:53 2022 -0600
+
+    Encapsulated secretPassageAdjacencies in it's own method
+
+commit fc05c8bbc6539d672be4377ae7954985fcd45df3
+Author: Hunter S. Thompson <hunter@smallworks.com>
+Date:   Mon Oct 24 15:55:04 2022 -0600
+
+    Removed unnessecary duplicate getter in Room.java, there were two ways to get the center cell
+
+commit 6c41e5ddc1e9c11101adeffaef3a9ca467ec1a0c
+Author: Hunter S. Thompson <hunter@smallworks.com>
+Date:   Mon Oct 24 15:52:56 2022 -0600
+
+    Added comments to all uncommented files
+
+commit c82a6360d7c411745175d8ef1df1db92f471ea44
+Merge: 3f81555 c5b6c6e
+Author: gsgrattan <gsgrattan@gmail.com>
+Date:   Mon Oct 24 15:46:08 2022 -0600
+
+    Merge branch 'main' of github.com:gsgrattan/ClueProject into main
+
+commit 3f81555589a93c8e363b4fba81d5a44493c066e8
+Author: gsgrattan <gsgrattan@gmail.com>
+Date:   Mon Oct 24 15:45:40 2022 -0600
+
+    Added a changes.txt that has the git diff of the major refactoring changes
+
+commit c5b6c6e530303e82497d60943181f906353c1f82
+Author: Hunter S. Thompson <hunter@smallworks.com>
+Date:   Mon Oct 24 15:27:48 2022 -0600
+
+    Removed unnesecary whitespace and commented out code
+
+commit 4eb73ceae569ba3bfaf7c881648bc14351eb33a9
+Author: gsgrattan <gsgrattan@gmail.com>
+Date:   Mon Oct 24 11:07:08 2022 -0600
+
+    Reconfigured some tests for a BadConfigExpeption in loadLayoutConfig method, also renamed some variables to improve readability
+
+commit 87f04a2c1a2524c550473a8edb60580005ca723a
+Author: gsgrattan <gsgrattan@gmail.com>
+Date:   Mon Oct 24 10:47:46 2022 -0600
+
+    refactored the adjacency list initialization, and encapsulated it in its own method
+
+commit 1ed74598e20dae7ceb9785604383e1d89f8d77e1
+Author: gsgrattan <gsgrattan@gmail.com>
+Date:   Mon Oct 24 10:26:45 2022 -0600
+
+    Deleted old commented out code in Board.java
+
+commit 4571f70f8e6e9d815decfc072ee7d66ac613284e
+Author: Hunter S. Thompson <hunter@smallworks.com>
+Date:   Tue Oct 18 13:51:22 2022 -0600
+
+    Fixed board tests
+
+commit 9a9abc9e9538c7f0cd4c2c8c30292f99cf007de9
+Merge: d2927cd 6ad3da2
+Author: gsgrattan <gsgrattan@gmail.com>
+Date:   Tue Oct 18 06:22:46 2022 -0600
+
+    Merge branch 'main' of github.com:gsgrattan/ClueProject into main
+    Merge to include cluelayout.xlsx
+
+commit d2927cd96423063120b36423321587f3df041691
+Author: gsgrattan <gsgrattan@gmail.com>
+Date:   Tue Oct 18 06:22:20 2022 -0600
+
+    Added CluePlanning.xlsx
+
+commit 6ad3da2f9c3a6cf53e6443897d06ff5fd22e6b46
+Author: gsgrattan <gsgrattan@gmail.com>
+Date:   Tue Oct 18 02:46:02 2022 -0600
+
+    Cleaned up print messages
+
+commit 53bf6de03abbda57f4843d30976e3c0d586b9987
+Author: gsgrattan <gsgrattan@gmail.com>
+Date:   Tue Oct 18 02:43:26 2022 -0600
+
+    Finished calcTargets(), now properly calculates targets according to BoardAdjTargetTest306 file
+
+commit 5cecd020bc20f713172b66afe4f657d464f06c19
+Author: Hunter S. Thompson <hunter@smallworks.com>
+Date:   Tue Oct 18 01:53:29 2022 -0600
+
+    Fixed processCell() so it properly adds the non-room/normal adjacencies
+
+commit aa7f373401b6dda5c4763024e3dae9760cf0657e
+Author: Hunter S. Thompson <hunter@smallworks.com>
+Date:   Tue Oct 18 01:52:48 2022 -0600
+
+    Fixed testAdjacenciesRooms() test so it tests the correct cells
+
+commit 6669e2be3ff6722b4458a7f6bf7f2f73a3f96ef7
+Author: Hunter S. Thompson <hunter@smallworks.com>
+Date:   Tue Oct 18 01:33:58 2022 -0600
+
+    Got Room adjacencies test working
+
+commit 0a87ed43a83f413ede8fcc8915ed23a0b5e71e45
+Author: gsgrattan <gsgrattan@gmail.com>
+Date:   Thu Oct 13 15:47:24 2022 -0600
+
+    updated git ignore to ignore lock files on xcel files
+
+commit 66448fc18e28de9a51aa1f1c5b40c5fa18231c6c
+Author: gsgrattan <gsgrattan@gmail.com>
+Date:   Thu Oct 13 15:45:50 2022 -0600
+
+    Added custom tests for our board, added 306 file in for testing
+
+commit 3f850745bd66154bf4b38b11bdffdafc4e1a3667
+Author: gsgrattan <gsgrattan@gmail.com>
+Date:   Thu Oct 13 15:45:20 2022 -0600
+
+    Clue Layout Planning
+
+commit 0e69a67d4f5399c00b407ef136064ddd2b729fdb
+Author: gsgrattan <gsgrattan@gmail.com>
+Date:   Thu Oct 13 14:32:00 2022 -0600
+
+    Fixed tests not working when running as package. Added methods for C15-A-2
+
+commit 5877476b4e020beda3752f30aa53b3d4ec67de62
+Author: gsgrattan <gsgrattan@gmail.com>
+Date:   Thu Oct 13 14:13:48 2022 -0600
+
+    Added comments
+
+commit d54efe6131726d8507edb3b5d29b78d865665166
+Author: Hunter S. Thompson <hunter@smallworks.com>
+Date:   Thu Oct 13 13:46:42 2022 -0600
+
+    Fixed tests to reflect the actual board rahter than off by 'n' errors
+
+commit 429f958122d258cd038db7092805754d8800d390
+Author: Hunter S. Thompson <hunter@smallworks.com>
+Date:   Thu Oct 13 13:45:44 2022 -0600
+
+    Removed space after 'Parlor' to fix test assertion that 'Parlor ' == 'Parlor'
+
+commit 339569c36febd0ee8d90bffe8a3b5eae4aa6771c
+Author: Hunter S. Thompson <hunter@smallworks.com>
+Date:   Thu Oct 13 13:43:47 2022 -0600
+
+    Fixed Board setup so it errors on incorrect files
+
+commit b4739cf06f659cf0ceec52e3f8bb409baf0b07b8
+Author: George Grattan <gsgrattan@mines.edu>
+Date:   Thu Oct 13 12:14:05 2022 -0600
+
+    Fixed File init test to load the correct file
+
+commit 2151c66fb7e157767158be4b169573dd63c96fce
+Author: George Grattan <gsgrattan@mines.edu>
+Date:   Thu Oct 13 12:12:42 2022 -0600
+
+    Added throw BadConfigFormatException to board to check for bad formats of input files
+
+commit 39645e7720011df7730c015fa8a22c1b87b69a6f
+Author: Hunter S. Thompson <hunter@smallworks.com>
+Date:   Tue Oct 11 14:21:57 2022 -0600
+
+    Filled out method stubs
+
+commit 740011c383d8349819911e5ce9666dbc911655c8
+Author: gsgrattan <gsgrattan@gmail.com>
+Date:   Tue Oct 11 14:19:52 2022 -0600
+
+    Filled out method stubs
+
+commit 7bbf516c3a41635a47b434724747af34eda005db
+Author: gsgrattan <gsgrattan@gmail.com>
+Date:   Tue Oct 11 14:19:31 2022 -0600
+
+    Filled out method stubs
+
+commit d21d86674a450812d41caa8a47c5ef67ae1d28b3
+Author: gsgrattan <gsgrattan@gmail.com>
+Date:   Tue Oct 11 12:43:22 2022 -0600
+
+    removed indicies in file
+
+commit ea4c3e835c75dbe96b8f8ac4b3b091de459b4696
+Author: gsgrattan <gsgrattan@gmail.com>
+Date:   Tue Oct 11 12:41:53 2022 -0600
+
+    Added in cell feature init
+
+commit cf5bcc54e729574ce3dda714ab00ba7deba5c72f
+Author: gsgrattan <gsgrattan@gmail.com>
+Date:   Tue Oct 11 12:41:12 2022 -0600
+
+    Added getters and setters
+
+commit e73235040e2c9f64390c89a3da107aa06fc6c9bc
+Author: gsgrattan <gsgrattan@gmail.com>
+Date:   Tue Oct 11 11:45:10 2022 -0600
+
+    Removed .project, added to .gitignore
+
+commit b7af6dbaa0448b7727c10378118a0058ea70e54d
+Author: gsgrattan <gsgrattan@gmail.com>
+Date:   Mon Oct 10 03:37:53 2022 -0600
+
+    Moved BoardTestExp.java to tests package
+
+commit b678d220e84db58dc34eceeba76912ff70a7c2bd
+Author: gsgrattan <gsgrattan@gmail.com>
+Date:   Mon Oct 10 03:37:22 2022 -0600
+
+    Added Test.txt describing our tests and how they are different from the '306' tests
+
+commit b1208f880c33b14b881dbb5f00f146779aef3a3f
+Author: gsgrattan <gsgrattan@gmail.com>
+Date:   Mon Oct 10 03:36:22 2022 -0600
+
+    Added File Init Tests for our specific board
+
+commit 6bc6fe51de50ead52911e2f40f083542ba13f1f1
+Author: gsgrattan <gsgrattan@gmail.com>
+Date:   Mon Oct 10 03:35:14 2022 -0600
+
+    Added getNumRooms() to Board, just returns the number of rooms in the board
+
+commit d710d1446676f62326e077cefc84ea84eaaecabc
+Author: Hunter S. Thompson <hunter@smallworks.com>
+Date:   Mon Oct 10 01:47:57 2022 -0600
+
+    Added clueGame initial stubs
+
+commit 03a387853c84d6514fb7723df982ce442f5903d5
+Author: Hunter S. Thompson <hunter@smallworks.com>
+Date:   Mon Oct 10 01:43:20 2022 -0600
+
+    Added all initial tests from C14A-2
+
+commit e218165e8a0ad38b724aadd6643f9b158084c2f8
+Author: Hunter S. Thompson <hunter@smallworks.com>
+Date:   Mon Oct 10 01:42:20 2022 -0600
+
+    Added all data from C14A-2
+
+commit 979d481ce59d809f0c90ffdc3ad030d404c6e3be
+Author: Hunter S. Thompson <hunter@smallworks.com>
+Date:   Sun Oct 9 20:30:14 2022 -0600
+
+    Deleted Pair.java under types, added test for TestBoardCell toString() to get to 100% code coverage
+
+commit a5148083647e86b0b7d1e87662215a4dfa96701a
+Author: Hunter S. Thompson <hunter@smallworks.com>
+Date:   Sun Oct 9 20:23:18 2022 -0600
+
+    deleted .classpath from repo, there should only be local only copies of this file
+
+commit 82fb7667c9a1dcd7c4506eab0fb546ddac2e4ecd
+Author: gsgratton <gsgrattan@gmail.com>
+Date:   Sun Oct 9 20:18:22 2022 -0600
+
+    Pushed code from last commit, not sure why it didn't push
+
+commit ca0b10f9d8a2f6f5834fe460fac3a2f0a77be441
+Author: gsgrattan <gsgrattan@gmail.com>
+Date:   Sun Oct 9 20:14:56 2022 -0600
+
+    public calcTargets() is just a caller for private calcTargets() in order to not expose visited set.
+    
+    Finished calcTargets function so that it properly calculate all targets.
+    
+    Constructor now calculates all TestBoardCell adjacencies at board creation time.
+
+commit b866cba80228bbdb026eb23c8168a2a79d718c9f
+Author: gsgrattan <gsgrattan@gmail.com>
+Date:   Sun Oct 9 20:11:09 2022 -0600
+
+    Commented out door functionality in TestBoardCell. Added toString for TestBoardCell, constructor now takes (row, col)
+
+commit aab57e8e300747821946d30009a46e2f751e33ab
+Author: Hunter S. Thompson <hunter@smallworks.com>
+Date:   Sun Oct 9 18:47:47 2022 -0600
+
+    TestBoard constructor now takes rows, columns as its inputs (for how big the board is). Constructs an arraylist of default cells of size mxn. getCell now returns the proper cell from the board rather than an empty cell.
+
+commit 1e7b0886d6b786a1bfeb719b42feb10cbbc6b79d
+Author: Hunter S. Thompson <hunter@smallworks.com>
+Date:   Sun Oct 9 18:44:23 2022 -0600
+
+    removed rows and columns from TestBoardCell constructor, they are not needed. Also properly add cells to the adjacency list when addAdjacency() is called
+
+commit 784c8634e34a3ca4c2fcaf5683891a95bbca398a
+Author: Hunter S. Thompson <hunter@smallworks.com>
+Date:   Sun Oct 9 18:18:50 2022 -0600
+
+    added isDoor boolean, setIsDoor(), and getDoor() to testBoardCell (will be needed later in the project)
+
+commit a1206f33719e4fed1733ea5b5b9d6e9f89c3c5c9
+Author: HSpeedT <77657351+HSpeedT@users.noreply.github.com>
+Date:   Fri Oct 7 17:43:12 2022 -0600
+
+    updated .gitignore to ignore gitlog.log file related to turning assignments in
+
+commit ec2142bfb7890bdcb5942f233061cbf84f8e4efa
+Author: HSpeedT <77657351+HSpeedT@users.noreply.github.com>
+Date:   Fri Oct 7 17:41:07 2022 -0600
+
+    updated .gitignore to ignore the class path
+
+commit 681a70089da6e49a984cf9e6f3ab0aeb04140c30
+Author: HSpeedT <77657351+HSpeedT@users.noreply.github.com>
+Date:   Fri Oct 7 17:40:10 2022 -0600
+
+    added proper comments to each line, return adjacencyList from getAdjList()
+
+commit afdb17867b81b03b89b3b703e1bc8f8e999f8358
+Author: HSpeedT <77657351+HSpeedT@users.noreply.github.com>
+Date:   Fri Oct 7 17:38:41 2022 -0600
+
+    Added a targets set (set of TestBoardCell), getTargets() now returns the targets set
+
+commit 6f737b708adc431c03dc1bf85687fe2841dea786
+Author: HSpeedT <77657351+HSpeedT@users.noreply.github.com>
+Date:   Fri Oct 7 17:37:19 2022 -0600
+
+    Added other test cases, commented each one properly
+
+commit 4e0f64ffecedd0653f504977fa64b2538cfc240a
+Author: gsgrattan <gsgrattan@gmail.com>
+Date:   Thu Oct 6 18:08:21 2022 -0600
+
+    Renamed and the project and the test package to experiment per the addignment. Additionally I added the rest of the method stubs for the non test classes
+
+commit a0b265b165801813b7eb4552210d7993f104550e
+Author: gsgrattan <gsgrattan@gmail.com>
+Date:   Tue Oct 4 12:17:07 2022 -0600
+
+    started the basic functionality of the Junit Tests
+
+commit f668eed393186c0b6a96068fd52edb4fb45cbf86
+Author: gsgrattan <gsgrattan@gmail.com>
+Date:   Tue Oct 4 11:54:36 2022 -0600
+
+    fixed some file organization
+
+commit ee8da4f1e5197dacc152233c8d3201f17f6623af
+Author: Hunter S. Thompson <hunter@smallworks.com>
+Date:   Tue Oct 4 11:53:14 2022 -0600
+
+    Added Clue Layout, both csv and xls files
+
+commit d6af4c88aeb7b748462390abc4ccc0c630bb7bd5
+Author: gsgrattan <gsgrattan@gmail.com>
+Date:   Tue Oct 4 11:52:48 2022 -0600
+
+    Added a folder for the various assignments for the project, Included the text files for C13A
+
+commit 043a85c6a4e510d7eacb5a7515e82cf6fa237ebc
+Author: gsgrattan <gsgrattan@gmail.com>
+Date:   Tue Oct 4 11:50:09 2022 -0600
+
+    initial commit
+
+commit 644e411fa0af2ff4043c5eb517b33ebeae89cf13
+Author: George Grattan <57678622+gsgrattan@users.noreply.github.com>
+Date:   Tue Oct 4 11:38:21 2022 -0600
+
+    Initial commit
