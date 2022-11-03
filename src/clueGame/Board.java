@@ -28,7 +28,8 @@ public class Board {
 	private Set<BoardCell> targets;
 	private ArrayList<BoardCell> doorways;
 	
-	private HashSet<Card> deck;
+	private Set<Card> deck;
+	private ArrayList<Player> players;
 	
 	// constructor is private to ensure only one can be created
 	private Board() {
@@ -48,6 +49,8 @@ public class Board {
 		INSTANCE = new Board();
 		this.board = new ArrayList<List<BoardCell>>();
 		this.roomMap = new HashMap<Character, Room>();
+		this.deck = new HashSet<Card>();
+		this.players = new ArrayList<Player>();
 		numCols = -1;
 		numRooms = 0;
 
@@ -416,7 +419,7 @@ public class Board {
 
 	public ArrayList<Player> getPlayers() {
 		// TODO Auto-generated method stub
-		return null;
+		return players;
 	}
 
 	public ArrayList<Player> getHumanPlayers() {
@@ -429,14 +432,14 @@ public class Board {
 		return null;
 	}
 
-	public ArrayList<Card> getDeck() {
+	public Set<Card> getDeck() {
 		// TODO Auto-generated method stub
-		return null;
+		return deck;
 	}
 
-	public ArrayList<Card> getSolution() {
+	public Solution getSolution() {
 		// TODO Auto-generated method stub
-		return null;
+		return new Solution();
 	}
 
 	public void deal() {

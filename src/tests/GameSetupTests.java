@@ -16,6 +16,7 @@ import clueGame.CardType;
 import clueGame.ComputerPlayer;
 import clueGame.HumanPlayer;
 import clueGame.Player;
+import clueGame.Solution;
 
 public class GameSetupTests {
 
@@ -103,20 +104,20 @@ public class GameSetupTests {
 		board.deal();
 		ArrayList<Player> players = board.getPlayers();
 
-		ArrayList<Card> solution = board.getSolution();
+		Solution solution = board.getSolution();
 
 		// Check the solution size and card types
 		assertEquals(solution.size(), 3);
-		assertEquals(solution.get(0).getCardType(), CardType.PERSON);
-		assertEquals(solution.get(1).getCardType(), CardType.WEAPON);
-		assertEquals(solution.get(2).getCardType(), CardType.ROOM);
+		assertEquals(CardType.PERSON, solution.getPerp().getCardType());
+		assertEquals(CardType.WEAPON, solution.getWeapon().getCardType());
+		assertEquals( CardType.ROOM, solution.getPlace().getCardType());
 
 		// Check the player cards
 
 		// dividend = quotient*divisor + remainder
 		// thus we should expect the players to have either numPlayerCards or
 		// numPlayerCards + 1
-		int numPlayerCards = DECK_SIZE / NUM_PLAYERS;
+		int numPlayerCards = DECK_SIZE - 3 / NUM_PLAYERS;
 
 		// Iterate through the players
 		for (Player player : board.getPlayers()) {
