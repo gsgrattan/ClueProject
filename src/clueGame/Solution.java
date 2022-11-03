@@ -1,27 +1,32 @@
 package clueGame;
 
 public class Solution {
+	private Card person;
+	private Card weapon;
+	private Card room;
 
+	public Solution(Card person, Card weapon, Card room) {
+		this.person = person;
+		this.weapon = weapon;
+		this.room = room;
+	}
 
-	public Integer size() {
-		// TODO Auto-generated method stub
+	public int size() {
 		return 3;
 	}
 
 	public Card getPerp() {
-		// TODO Auto-generated method stub
-		return new Card("\0");
-	}
-	
-	public Card getWeapon() {
-		// TODO Auto-generated method stub
-		return new Card("\0");
-	}
-	
-	public Card getPlace() {
-		// TODO Auto-generated method stub
-		return new Card("\0");
+		return this.person;
 	}
 
+	public Card getWeapon() {
+		// TODO Auto-generated method stub
+		return this.weapon;
+	}
+
+	public Card getPlace() {
+		// TODO Auto-generated method stub
+		return this.room;
+	}
 
 }

@@ -47,25 +47,29 @@ public class GameSetupTests {
 		// Check the number of players
 		Assert.assertEquals(board.getPlayers().size(), NUM_PLAYERS);
 		// Check the number of human players
-		Assert.assertEquals(board.getHumanPlayers().size(), NUM_HUMAN);
 		// Check the number of computer players
-		Assert.assertEquals(board.getCpuPlayers().size(), NUM_CPU);
 
 		// Check the types of human players
-		for (var player : board.getHumanPlayers()) {
-			assertTrue(player instanceof HumanPlayer);
-		}
-		// Check the types of computer players
-		for (var player : board.getCpuPlayers()) {
-			assertTrue(player instanceof ComputerPlayer);
+		int numHumans = 0;
+		int numCumpooter = 0;
 
+		for (var player : board.getPlayers()) {
+
+			if (player instanceof HumanPlayer) {
+				numHumans++;
+			} else if (player instanceof ComputerPlayer) {
+				numCumpooter++;
+
+			} else {
+				fail();
+			}
 		}
 
+		Assert.assertEquals(NUM_HUMAN, numHumans);
+		Assert.assertEquals(NUM_CPU, numCumpooter);
 	}
 
 	@Test
-
-	// below I assume that we implement the deck as a set
 	public void testDeck() {
 		Assert.assertEquals(board.getDeck().size(), DECK_SIZE);
 		int numRooms = 0;
@@ -101,7 +105,6 @@ public class GameSetupTests {
 
 	@Test
 	public void testDeal() {
-		board.deal();
 		ArrayList<Player> players = board.getPlayers();
 
 		Solution solution = board.getSolution();
@@ -110,21 +113,20 @@ public class GameSetupTests {
 		assertEquals(solution.size(), 3);
 		assertEquals(CardType.PERSON, solution.getPerp().getCardType());
 		assertEquals(CardType.WEAPON, solution.getWeapon().getCardType());
-		assertEquals( CardType.ROOM, solution.getPlace().getCardType());
+		assertEquals(CardType.ROOM, solution.getPlace().getCardType());
 
 		// Check the player cards
 
 		// dividend = quotient*divisor + remainder
 		// thus we should expect the players to have either numPlayerCards or
 		// numPlayerCards + 1
-		int numPlayerCards = DECK_SIZE - 3 / NUM_PLAYERS;
+		int numPlayerCards = (DECK_SIZE - 3) / NUM_PLAYERS;
 
 		// Iterate through the players
 		for (Player player : board.getPlayers()) {
 			boolean result = ((player.getHandSize() == numPlayerCards) || (player.getHandSize() == numPlayerCards + 1));
 			// Assert that their hand has either numPlayerCards or numPlayerCards + 1
 			assertTrue(result);
-
 		}
 
 	}

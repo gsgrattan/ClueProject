@@ -16,7 +16,7 @@ Person, Daddy Dale, D
 Person, Baby Bush, B
 Person, Dummy Danica, P 
 Person, Jeinus Junior, G
-Person, Righteous Ricky. R
+Person, Righteous Ricky, R
 Person, Tiny Tony, T
 // weapons
 Weapon, Mountain Dew, M
@@ -25,4 +25,3 @@ Weapon, Steering Wheel, S
 Weapon, Radiator, R
 Weapon, Oil Pan, O
 Weapon, Busch Lite, B
-

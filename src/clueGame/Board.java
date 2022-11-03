@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -27,15 +28,27 @@ public class Board {
 	private Map<Character, Room> roomMap;
 	private Set<BoardCell> targets;
 	private ArrayList<BoardCell> doorways;
-	
+
 	private Set<Card> deck;
+	private Set<Card> playerCards;
+	private Set<Card> weaponCards;
+	private Set<Card> roomCards;
+	private Solution trueSolution;
+
 	private ArrayList<Player> players;
-	private Set<Card> weapons;
-	
+
 	// constructor is private to ensure only one can be created
 	private Board() {
 		super();
 		this.board = new ArrayList<List<BoardCell>>();
+
+		this.players = new ArrayList<Player>();
+
+		// Card sets
+		this.deck = new HashSet<Card>();
+		this.playerCards = new HashSet<Card>();
+		this.weaponCards = new HashSet<Card>();
+		this.roomCards = new HashSet<Card>();
 	}
 
 	// this method returns the only Board
@@ -50,9 +63,7 @@ public class Board {
 		INSTANCE = new Board();
 		this.board = new ArrayList<List<BoardCell>>();
 		this.roomMap = new HashMap<Character, Room>();
-		this.deck = new HashSet<Card>();
-		this.players = new ArrayList<Player>();
-		this.weapons = new HashSet<Card>();
+
 		numCols = -1;
 		numRooms = 0;
 
@@ -76,6 +87,8 @@ public class Board {
 			error.printStackTrace();
 		}
 		this.initializeAdjacencies();
+
+		this.deal();
 	}
 
 	/*
@@ -92,7 +105,7 @@ public class Board {
 	 */
 
 	public void loadSetupConfig() throws FileNotFoundException, BadConfigFormatException {
-		roomMap = new HashMap();
+		this.roomMap = new HashMap();
 		File set = new File("data/" + this.setup);
 		Scanner reader = new Scanner(set);
 		while (reader.hasNextLine()) {
@@ -102,31 +115,47 @@ public class Board {
 				String[] splitData = data.split(", ");
 				Room r;
 				Card card;
-				
+
+				// if it's a room
 				if (splitData[0].equals("Room")) {
 					this.numRooms++;
 					r = new Room(splitData[1]);
 					r.setIsRoom(true);
-					roomMap.put(splitData[2].charAt(0), r);
-				} else if (splitData[0].equals("Space")){
+					this.roomMap.put(splitData[2].charAt(0), r);
+
+					card = new Card(splitData[1], CardType.ROOM);
+					this.roomCards.add(card);
+
+					// if it's a space
+				} else if (splitData[0].equals("Space")) {
 					r = new Room(splitData[1]);
-					roomMap.put(splitData[2].charAt(0), r);
-				}else if(splitData[0].equals("Weapon")) {
-					card = new Card(splitData[1]);
-					this.weapons.add(card);
-					
-				}else if(splitData[0].equals("Person")) {
-					Player player = new ComputerPlayer(splitData[1]);
+					this.roomMap.put(splitData[2].charAt(0), r);
+
+					// if it's a weapon
+				} else if (splitData[0].equals("Weapon")) {
+					card = new Card(splitData[1], CardType.WEAPON);
+					this.weaponCards.add(card);
+
+					// if it's a Person
+				} else if (splitData[0].equals("Person")) {
+					Player player;
+					if (this.players.size() == 0) {
+						player = new HumanPlayer(splitData[1]);
+
+					} else {
+						player = new ComputerPlayer(splitData[1]);
+					}
 					players.add(player);
-					
+
+					card = new Card(splitData[1], CardType.PERSON);
+					this.playerCards.add(card);
+
+					// Else there's something wrong with the setup file
 				} else {
 					throw new BadConfigFormatException();
 				}
-
-				
 			}
 		}
-
 		reader.close();
 	}
 
@@ -428,16 +457,55 @@ public class Board {
 		}
 	}
 
+	public void deal() {
+		deck.addAll(this.playerCards);
+		deck.addAll(this.weaponCards);
+		deck.addAll(this.roomCards);
+
+		Card perpetrator = getRandomCard(this.playerCards);
+		Card weapon = getRandomCard(this.weaponCards);
+		Card place = getRandomCard(this.roomCards);
+
+		this.trueSolution = new Solution(perpetrator, weapon, place);
+
+		Set<Card> dealDeck = new HashSet<Card>();
+		dealDeck.addAll(deck);
+
+		dealDeck.remove(perpetrator);
+		dealDeck.remove(weapon);
+		dealDeck.remove(place);
+
+		Card choiceCard;
+
+		while (!dealDeck.isEmpty()) {
+			for (Player player : this.players) {
+				choiceCard = getRandomCard(dealDeck);
+				player.updateHand(choiceCard);
+				dealDeck.remove(choiceCard);
+				if (dealDeck.size() == 0) {
+					break;
+				}
+			}
+		}
+	}
+
+	private Card getRandomCard(Set<Card> cards) {
+		Random rand = new Random();
+		int i = 0;
+		int randIdx = rand.nextInt(cards.size());
+		Card randCard = null;
+		for (Card card : cards) {
+			if (i == randIdx) {
+				randCard = card;
+				break;
+			}
+			++i;
+		}
+		return randCard;
+	}
+
 	public ArrayList<Player> getPlayers() {
 		return players;
-	}
-
-	public ArrayList<Player> getHumanPlayers() {
-		return null;
-	}
-
-	public ArrayList<Player> getCpuPlayers() {
-		return null;
 	}
 
 	public Set<Card> getDeck() {
@@ -445,11 +513,7 @@ public class Board {
 	}
 
 	public Solution getSolution() {
-		return new Solution();
-	}
-
-	public void deal() {
-
+		return trueSolution;
 	}
 
 }

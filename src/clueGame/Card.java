@@ -7,7 +7,6 @@ public class Card {
 	public Card(String cardName, CardType type) {
 		this.cardName = cardName;
 		this.type = type;
-		
 
 	}
 
@@ -18,6 +17,11 @@ public class Card {
 
 	public CardType getCardType() {
 		return this.type;
+	}
+
+	public String getName() {
+		// TODO Auto-generated method stub
+		return this.cardName;
 	}
 
 }

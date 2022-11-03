@@ -11,3 +11,17 @@ Room, Hall, H
 // other spaces on board
 Space, Unused, X
 Space, Walkway, W
+//Characters
+Person, Daddy Dale, D
+Person, Baby Bush, B
+Person, Dummy Danica, P 
+Person, Jeinus Junior, G
+Person, Righteous Ricky, R
+Person, Tiny Tony, T
+// weapons
+Weapon, Mountain Dew, M
+Weapon, Catalytic Converter, C
+Weapon, Steering Wheel, S
+Weapon, Radiator, R
+Weapon, Oil Pan, O
+Weapon, Busch Lite, B
