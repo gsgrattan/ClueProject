@@ -112,7 +112,8 @@ public class Board {
 					r = new Room(splitData[1]);
 					roomMap.put(splitData[2].charAt(0), r);
 				}else if(splitData[0].equals("Weapon")) {
-			
+					card = new Card(splitData[1]);
+					this.weapons.add(card);
 					
 				}else if(splitData[0].equals("Person")) {
 					Player player = new ComputerPlayer(splitData[1]);
