@@ -95,20 +95,21 @@ public class Board {
 			if (!data.substring(0, 2).equals("//") && !data.equals("\n")) {
 
 				String[] splitData = data.split(", ");
+				Room r;
 
 				if (splitData[0].equals("Room")) {
 					this.numRooms++;
-				} else if (!splitData[0].equals("Space")) {
+					r = new Room(splitData[1]);
+					r.setIsRoom(true);
+					roomMap.put(splitData[2].charAt(0), r);
+				} else if (splitData[0].equals("Space")){
+					r = new Room(splitData[1]);
+					roomMap.put(splitData[2].charAt(0), r);
+				} else {
 					throw new BadConfigFormatException();
 				}
 
-				Room r = new Room(splitData[1]);
-
-				if (splitData[0].equals("Room")) {
-					r.setIsRoom(true);
-				}
-
-				roomMap.put(splitData[2].charAt(0), r);
+				
 			}
 		}
 
