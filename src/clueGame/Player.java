@@ -12,6 +12,10 @@ public abstract class Player {
 	private ArrayList<Card> hand;
 	private HashSet<Card> cardsSeen;
 	
+	protected Player(String name) {
+		this.name = name;
+	}
+	
 	public void updateHand(Card card) {
 		this.hand.add(card);
 	}

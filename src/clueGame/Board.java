@@ -30,6 +30,7 @@ public class Board {
 	
 	private Set<Card> deck;
 	private ArrayList<Player> players;
+	private Set<Card> weapons;
 	
 	// constructor is private to ensure only one can be created
 	private Board() {
@@ -51,6 +52,7 @@ public class Board {
 		this.roomMap = new HashMap<Character, Room>();
 		this.deck = new HashSet<Card>();
 		this.players = new ArrayList<Player>();
+		this.weapons = new HashSet<Card>();
 		numCols = -1;
 		numRooms = 0;
 
@@ -99,7 +101,8 @@ public class Board {
 
 				String[] splitData = data.split(", ");
 				Room r;
-
+				Card card;
+				
 				if (splitData[0].equals("Room")) {
 					this.numRooms++;
 					r = new Room(splitData[1]);
@@ -108,6 +111,13 @@ public class Board {
 				} else if (splitData[0].equals("Space")){
 					r = new Room(splitData[1]);
 					roomMap.put(splitData[2].charAt(0), r);
+				}else if(splitData[0].equals("Weapon")) {
+			
+					
+				}else if(splitData[0].equals("Person")) {
+					Player player = new ComputerPlayer(splitData[1]);
+					players.add(player);
+					
 				} else {
 					throw new BadConfigFormatException();
 				}
@@ -418,32 +428,26 @@ public class Board {
 	}
 
 	public ArrayList<Player> getPlayers() {
-		// TODO Auto-generated method stub
 		return players;
 	}
 
 	public ArrayList<Player> getHumanPlayers() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public ArrayList<Player> getCpuPlayers() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public Set<Card> getDeck() {
-		// TODO Auto-generated method stub
 		return deck;
 	}
 
 	public Solution getSolution() {
-		// TODO Auto-generated method stub
 		return new Solution();
 	}
 
 	public void deal() {
-		// TODO Auto-generated method stub
 
 	}
 
