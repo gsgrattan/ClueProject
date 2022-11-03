@@ -27,7 +27,9 @@ public class Board {
 	private Map<Character, Room> roomMap;
 	private Set<BoardCell> targets;
 	private ArrayList<BoardCell> doorways;
-
+	
+	private HashSet<Card> deck;
+	
 	// constructor is private to ensure only one can be created
 	private Board() {
 		super();
