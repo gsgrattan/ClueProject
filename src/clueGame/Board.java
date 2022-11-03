@@ -425,7 +425,7 @@ public class Board {
 		// Add all the vvalues from deck to it
 		dealDeck.addAll(deck);
 
-		// remove the cards for the solution
+		// remove the solution from the deck to be dealt
 		dealDeck.remove(perpetrator);
 		dealDeck.remove(weapon);
 		dealDeck.remove(place);
@@ -434,10 +434,15 @@ public class Board {
 
 		// Deal the deck
 		while (!dealDeck.isEmpty()) {
+			// iterate through the payers
 			for (Player player : this.players) {
+				// select a random card
 				choiceCard = getRandomCard(dealDeck);
+				// give the card to the player
 				player.updateHand(choiceCard);
+				// remove the card from the deck
 				dealDeck.remove(choiceCard);
+				// if the deck is empty, break
 				if (dealDeck.size() == 0) {
 					break;
 				}
