@@ -86,8 +86,10 @@ public class Board {
 			System.out.println("Bad Config: Invalid Character in Layout");
 			error.printStackTrace();
 		}
+		// initialize the adjacency list
 		this.initializeAdjacencies();
 
+		// Deal the cards
 		this.deal();
 	}
 
@@ -123,6 +125,7 @@ public class Board {
 					r.setIsRoom(true);
 					this.roomMap.put(splitData[2].charAt(0), r);
 
+					// create and add the room card
 					card = new Card(splitData[1], CardType.ROOM);
 					this.roomCards.add(card);
 
@@ -133,18 +136,21 @@ public class Board {
 
 					// if it's a weapon
 				} else if (splitData[0].equals("Weapon")) {
+					// create and add the weapon card
 					card = new Card(splitData[1], CardType.WEAPON);
 					this.weaponCards.add(card);
 
 					// if it's a Person
 				} else if (splitData[0].equals("Person")) {
 					Player player;
+					// if it is the first player, it is a human
 					if (this.players.size() == 0) {
 						player = new HumanPlayer(splitData[1]);
-
+						// otherwise its a computer
 					} else {
 						player = new ComputerPlayer(splitData[1]);
 					}
+					// add the player
 					players.add(player);
 
 					card = new Card(splitData[1], CardType.PERSON);
@@ -367,6 +373,112 @@ public class Board {
 	}
 
 	/*
+	 * Caller function for calcTargets(BoardCell startCell, int pathlength, int
+	 * maxpath, Set<BoardCell> visited), but this one is shorter and more human
+	 * readable.
+	 */
+	public void calcTargets(BoardCell startCell, int pathlength) {
+		targets = new HashSet<BoardCell>();
+		this.calcTargets(startCell, pathlength, pathlength, new HashSet<BoardCell>());
+	}
+
+	/*
+	 * Calculate all the targets and add them to the adjacency list, this method is
+	 * private because it is called by the public one above which is used as a
+	 * "setup" function.
+	 */
+	private void calcTargets(BoardCell startCell, int pathlength, int maxpath, Set<BoardCell> visited) {
+		if (visited.isEmpty()) {
+			visited.add(startCell);
+		}
+
+		if (pathlength == 0 || (startCell.isRoomCenter() && maxpath != pathlength)) {
+			targets.add(startCell);
+
+		} else {
+			for (BoardCell cell : startCell.getAdjList()) {
+				if ((cell.isRoomCenter() || !cell.getOccupied()) && !visited.contains(cell)) {
+					visited.add(cell);
+					calcTargets(cell, pathlength - 1, maxpath, visited);
+					visited.remove(cell);
+				}
+			}
+		}
+	}
+
+	public void deal() {
+		// Create a deck
+		this.deck.addAll(this.playerCards);
+		this.deck.addAll(this.weaponCards);
+		this.deck.addAll(this.roomCards);
+
+		// Select the cards for the solution
+		Card perpetrator = getRandomCard(this.playerCards);
+		Card weapon = getRandomCard(this.weaponCards);
+		Card place = getRandomCard(this.roomCards);
+
+		// Create the solution
+		this.trueSolution = new Solution(perpetrator, weapon, place);
+
+		// Create the deck to deal from
+		Set<Card> dealDeck = new HashSet<Card>();
+		// Add all the vvalues from deck to it
+		dealDeck.addAll(deck);
+
+		// remove the cards for the solution
+		dealDeck.remove(perpetrator);
+		dealDeck.remove(weapon);
+		dealDeck.remove(place);
+
+		Card choiceCard;
+
+		// Deal the deck
+		while (!dealDeck.isEmpty()) {
+			for (Player player : this.players) {
+				choiceCard = getRandomCard(dealDeck);
+				player.updateHand(choiceCard);
+				dealDeck.remove(choiceCard);
+				if (dealDeck.size() == 0) {
+					break;
+				}
+			}
+		}
+	}
+
+	// Choses a random card from the deck
+	private Card getRandomCard(Set<Card> cards) {
+		Random rand = new Random();
+		// set the initial to zero
+		int i = 0;
+		// Choose a random index in the size of the deck
+		int randIdx = rand.nextInt(cards.size());
+		Card randCard = null;
+		// Iterate through the deck set
+		for (Card card : cards) {
+			// if the index is the random index, remove the card
+			if (i == randIdx) {
+				randCard = card;
+				break;
+			}
+			// increment the index
+			++i;
+		}
+		return randCard;
+	}
+
+	public ArrayList<Player> getPlayers() {
+		return players;
+	}
+
+	public Set<Card> getDeck() {
+		return deck;
+	}
+
+	public Solution getSolution() {
+		return trueSolution;
+	}
+
+	/*
 	 * Get the room
 	 */
 	public Room getRoom(char c) {
@@ -421,99 +533,6 @@ public class Board {
 	 */
 	public Set<BoardCell> getTargets() {
 		return this.targets;
-	}
-
-	/*
-	 * Caller function for calcTargets(BoardCell startCell, int pathlength, int
-	 * maxpath, Set<BoardCell> visited), but this one is shorter and more human
-	 * readable.
-	 */
-	public void calcTargets(BoardCell startCell, int pathlength) {
-		targets = new HashSet<BoardCell>();
-		this.calcTargets(startCell, pathlength, pathlength, new HashSet<BoardCell>());
-	}
-
-	/*
-	 * Calculate all the targets and add them to the adjacency list, this method is
-	 * private because it is called by the public one above which is used as a
-	 * "setup" function.
-	 */
-	private void calcTargets(BoardCell startCell, int pathlength, int maxpath, Set<BoardCell> visited) {
-		if (visited.isEmpty()) {
-			visited.add(startCell);
-		}
-
-		if (pathlength == 0 || (startCell.isRoomCenter() && maxpath != pathlength)) {
-			targets.add(startCell);
-
-		} else {
-			for (BoardCell cell : startCell.getAdjList()) {
-				if ((cell.isRoomCenter() || !cell.getOccupied()) && !visited.contains(cell)) {
-					visited.add(cell);
-					calcTargets(cell, pathlength - 1, maxpath, visited);
-					visited.remove(cell);
-				}
-			}
-		}
-	}
-
-	public void deal() {
-		deck.addAll(this.playerCards);
-		deck.addAll(this.weaponCards);
-		deck.addAll(this.roomCards);
-
-		Card perpetrator = getRandomCard(this.playerCards);
-		Card weapon = getRandomCard(this.weaponCards);
-		Card place = getRandomCard(this.roomCards);
-
-		this.trueSolution = new Solution(perpetrator, weapon, place);
-
-		Set<Card> dealDeck = new HashSet<Card>();
-		dealDeck.addAll(deck);
-
-		dealDeck.remove(perpetrator);
-		dealDeck.remove(weapon);
-		dealDeck.remove(place);
-
-		Card choiceCard;
-
-		while (!dealDeck.isEmpty()) {
-			for (Player player : this.players) {
-				choiceCard = getRandomCard(dealDeck);
-				player.updateHand(choiceCard);
-				dealDeck.remove(choiceCard);
-				if (dealDeck.size() == 0) {
-					break;
-				}
-			}
-		}
-	}
-
-	private Card getRandomCard(Set<Card> cards) {
-		Random rand = new Random();
-		int i = 0;
-		int randIdx = rand.nextInt(cards.size());
-		Card randCard = null;
-		for (Card card : cards) {
-			if (i == randIdx) {
-				randCard = card;
-				break;
-			}
-			++i;
-		}
-		return randCard;
-	}
-
-	public ArrayList<Player> getPlayers() {
-		return players;
-	}
-
-	public Set<Card> getDeck() {
-		return deck;
-	}
-
-	public Solution getSolution() {
-		return trueSolution;
 	}
 
 }

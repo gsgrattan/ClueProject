@@ -1,9 +1,11 @@
 package clueGame;
 
 public class Card {
+	// attributes
 	private String cardName;
 	private CardType type;
 
+	// constructor
 	public Card(String cardName, CardType type) {
 		this.cardName = cardName;
 		this.type = type;
