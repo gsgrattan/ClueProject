@@ -3,6 +3,7 @@ package clueGame;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 public abstract class Player {
@@ -41,10 +42,39 @@ public abstract class Player {
 	}
 
 	public Card disproveSuggestion(Solution suggestion, Player suggestor) {
+		// TODO: Refactor ans clean up method
+
+		ArrayList<Card> proofList = new ArrayList();
+
+		// if this player made the accusation, return null;
 		if (this.name.equals(suggestor.getName())) {
 			return null;
 		} else {
-			return new Card(null, null);
+			Card person = suggestion.getPerson();
+			Card weapon = suggestion.getWeapon();
+			Card room = suggestion.getRoom();
+
+			// Check the overlap (if any) between the Solution and the players hand
+			if (hand.contains(person)) {
+				proofList.add(person);
+			}
+			if (hand.contains(weapon)) {
+				proofList.add(weapon);
+			}
+			if (hand.contains(room)) {
+				proofList.add(room);
+			}
+
+			if (proofList.size() == 0) {
+				return null;
+			} else {
+				Random rand = new Random();
+
+				int randInt = rand.nextInt(proofList.size());
+
+				return proofList.get(randInt);
+
+			}
 		}
 
 	}
