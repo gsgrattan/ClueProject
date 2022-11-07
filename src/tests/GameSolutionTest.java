@@ -28,6 +28,8 @@ class GameSolutionTest {
 	private static Set<Card> weaponCards;
 	private static Set<Card> roomCards;
 
+	private static Solution trueSolution;
+
 	@BeforeAll
 	public static void setUp() {
 		board = Board.getInstance();
@@ -42,18 +44,18 @@ class GameSolutionTest {
 		weaponCards = board.getWeaponCards();
 		roomCards = board.getRoomCards();
 		players = board.getPlayers();
+
+		trueSolution = board.getSolution();
 	}
 
 	@Test
 	void AccusationTests() {
 
-		Solution trueSolution = board.getSolution();
-
 		// Test if checkAccusation returns true when given the true solution
 		assertTrue(board.checkAccusation(trueSolution));
 
 		// Verify that these are not modifying board.trueSOlution();
-		Solution wrongPerson = board.getSolution();
+		Solution wrongPerson = new Solution(trueSolution);
 		for (Card person : playerCards) {
 			if (person != trueSolution.getPerson()) {
 				wrongPerson.setPerson(person);
@@ -62,7 +64,7 @@ class GameSolutionTest {
 			}
 		}
 
-		Solution wrongWeapon = board.getSolution();
+		Solution wrongWeapon = new Solution(trueSolution);
 
 		for (Card weapon : weaponCards) {
 			if (weapon != trueSolution.getWeapon()) {
@@ -71,7 +73,7 @@ class GameSolutionTest {
 			}
 		}
 
-		Solution wrongRoom = board.getSolution();
+		Solution wrongRoom = new Solution(trueSolution);
 
 		for (Card room : roomCards) {
 			if (room != trueSolution.getRoom()) {
@@ -133,7 +135,6 @@ class GameSolutionTest {
 	void handleSuggestionTests() {
 
 		// If nobody can disprove the suggestion null is returned
-		Solution trueSolution = board.getSolution();
 		assertNull(board.handleSuggestion(trueSolution, players.get(0)));
 
 		// HumanPlayer is always at the first index
