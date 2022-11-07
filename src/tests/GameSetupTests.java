@@ -39,6 +39,8 @@ public class GameSetupTests {
 		board.setConfigFiles("ClueLayout.csv", "ClueSetup.txt");
 		// Initialize the board
 		board.initialize();
+		//
+		board.deal();
 
 	}
 

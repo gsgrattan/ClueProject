@@ -92,8 +92,6 @@ public class Board {
 		// initialize the adjacency list
 		this.initializeAdjacencies();
 
-		// Deal the cards
-		this.deal();
 	}
 
 	public void setConfigFiles(String layout, String setup) {
