@@ -266,8 +266,27 @@ public class Board {
 	}
 
 	public Card handleSuggestion(Solution suggestion, Player suggestor) {
+		Player player;
+		int i = this.players.indexOf(suggestor);
+		Card result = null;
 
-		return new Card(null, null);
+		do {
+			i++;
+
+			if (i >= this.players.size()) {
+				i = 0;
+			}
+
+			player = this.players.get(i);
+
+			result = player.disproveSuggestion(suggestion, suggestor);
+			if (result != null) {
+				break;
+			}
+
+		} while (player != suggestor);
+
+		return result;
 
 	}
 
