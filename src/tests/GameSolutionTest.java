@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.Set;
 
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -37,11 +36,12 @@ class GameSolutionTest {
 		// Initialize the board
 		board.initialize();
 
+		board.deal();
+
 		playerCards = board.getPlayerCards();
 		weaponCards = board.getWeaponCards();
 		roomCards = board.getRoomCards();
 		players = board.getPlayers();
-
 	}
 
 	@Test
@@ -92,9 +92,11 @@ class GameSolutionTest {
 		Card proof;
 
 		Solution accusation = board.getSolution();
-		Player testPlayer = new ComputerPlayer("testPlayer");
+		Player testPlayer0 = new ComputerPlayer("testPlayer0");
 
-		proof = testPlayer.disproveSuggestion(accusation, null);
+		Player testPlayer1 = new ComputerPlayer("testPlayer1");
+
+		proof = testPlayer0.disproveSuggestion(accusation, testPlayer1);
 
 		// The testplayer currently has an empty and so it should not be able to
 		// disprove, thus it returns null
@@ -102,21 +104,21 @@ class GameSolutionTest {
 
 		assertNull(proof);
 
-		testPlayer.updateHand(accusation.getPerson());
+		testPlayer0.updateHand(accusation.getPerson());
 
-		proof = testPlayer.disproveSuggestion(accusation, null);
+		proof = testPlayer0.disproveSuggestion(accusation, testPlayer1);
 
 		// Assert that it returns the correct card
 		assertEquals(proof, accusation.getPerson());
 
 		// Now it has two cards in its hand
-		testPlayer.updateHand(accusation.getWeapon());
+		testPlayer0.updateHand(accusation.getWeapon());
 
 		int numTests = 100;
 		int numPeople = 0;
 		int numWeapons = 0;
 		for (int i = 0; i < numTests; ++i) {
-			proof = testPlayer.disproveSuggestion(accusation, null);
+			proof = testPlayer0.disproveSuggestion(accusation, testPlayer1);
 			if (proof.equals(accusation.getPerson())) {
 				++numPeople;
 			} else if (proof.equals(accusation.getWeapon())) {
@@ -127,22 +129,12 @@ class GameSolutionTest {
 		assertTrue(java.lang.Math.abs(numWeapons - numPeople) < numTests / 2);
 	}
 
-	@Before
-	void init() {
-		board = Board.getInstance();
-		// config files
-		board.setConfigFiles("ClueLayout.csv", "ClueSetup.txt");
-		// Initialize the board
-		board.initialize();
-		board.deal();
-	}
-
 	@Test
 	void handleSuggestionTests() {
 
 		// If nobody can disprove the suggestion null is returned
 		Solution trueSolution = board.getSolution();
-		assertNull(board.handleSuggestion(trueSolution, null));
+		assertNull(board.handleSuggestion(trueSolution, players.get(0)));
 
 		// HumanPlayer is always at the first index
 		// have the Human Player have the card for the person (Not Realistic in game,

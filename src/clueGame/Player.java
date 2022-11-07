@@ -19,7 +19,6 @@ public abstract class Player {
 
 		this.name = name;
 		this.hand = new ArrayList<Card>();
-
 		seenCards = new HashSet<Card>();
 
 	}
@@ -45,7 +44,7 @@ public abstract class Player {
 		if (this.name.equals(suggestor.getName())) {
 			return null;
 		} else {
-			return null;
+			return new Card(null, null);
 		}
 
 	}
