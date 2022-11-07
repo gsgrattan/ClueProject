@@ -41,9 +41,13 @@ public abstract class Player {
 		return this.name;
 	}
 
-	public Card disproveSuggestion(Solution suggestion) {
+	public Card disproveSuggestion(Solution suggestion, Player suggestor) {
+		if (this.name.equals(suggestor.getName())) {
+			return null;
+		} else {
+			return null;
+		}
 
-		return new Card(null, null);
 	}
 
 }

@@ -4,11 +4,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.Set;
 
+import org.junit.Before;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -51,6 +51,8 @@ class GameSolutionTest {
 
 		// Test if checkAccusation returns true when given the true solution
 		assertTrue(board.checkAccusation(trueSolution));
+
+		// Verify that these are not modifying board.trueSOlution();
 		Solution wrongPerson = board.getSolution();
 		for (Card person : playerCards) {
 			if (person != trueSolution.getPerson()) {
@@ -92,7 +94,7 @@ class GameSolutionTest {
 		Solution accusation = board.getSolution();
 		Player testPlayer = new ComputerPlayer("testPlayer");
 
-		proof = testPlayer.disproveSuggestion(accusation);
+		proof = testPlayer.disproveSuggestion(accusation, null);
 
 		// The testplayer currently has an empty and so it should not be able to
 		// disprove, thus it returns null
@@ -102,7 +104,7 @@ class GameSolutionTest {
 
 		testPlayer.updateHand(accusation.getPerson());
 
-		proof = testPlayer.disproveSuggestion(accusation);
+		proof = testPlayer.disproveSuggestion(accusation, null);
 
 		// Assert that it returns the correct card
 		assertEquals(proof, accusation.getPerson());
@@ -113,9 +115,8 @@ class GameSolutionTest {
 		int numTests = 100;
 		int numPeople = 0;
 		int numWeapons = 0;
-		int tol = 25;
 		for (int i = 0; i < numTests; ++i) {
-			proof = testPlayer.disproveSuggestion(accusation);
+			proof = testPlayer.disproveSuggestion(accusation, null);
 			if (proof.equals(accusation.getPerson())) {
 				++numPeople;
 			} else if (proof.equals(accusation.getWeapon())) {
@@ -123,21 +124,47 @@ class GameSolutionTest {
 			}
 		}
 		// Check that it returns a random card if it has multiple disproving cards
-		assertTrue(java.lang.Math.abs(numWeapons - numPeople) < numTests);
+		assertTrue(java.lang.Math.abs(numWeapons - numPeople) < numTests / 2);
+	}
+
+	@Before
+	void init() {
+		board = Board.getInstance();
+		// config files
+		board.setConfigFiles("ClueLayout.csv", "ClueSetup.txt");
+		// Initialize the board
+		board.initialize();
+		board.deal();
 	}
 
 	@Test
 	void handleSuggestionTests() {
 
-		// If nobody can disprive the suggestion null is returned
+		// If nobody can disprove the suggestion null is returned
 		Solution trueSolution = board.getSolution();
-		assertNull(board.handleSuggestion(trueSolution));
+		assertNull(board.handleSuggestion(trueSolution, null));
 
-	}
+		// HumanPlayer is always at the first index
+		// have the Human Player have the card for the person (Not Realistic in game,
+		players.get(0).updateHand(trueSolution.getPerson());
 
-	@Test
-	void computerSuggestionTests() {
-		fail("Not yet implemented");
+		// Check that the player will not disprove their own suggestion
+		assertNull(board.handleSuggestion(trueSolution, players.get(0)));
+
+		// Assert that the Player will return the correct card to disprove the
+		// suggestion
+		assertEquals(board.handleSuggestion(trueSolution, players.get(1)), trueSolution.getPerson());
+
+		// Have another player
+		players.get(2).updateHand(trueSolution.getWeapon());
+
+		// Check that the player order is obeyed, i.e. if player 2 makes a suggestion
+		// and players 3 and 1 can disprove it, player 3 gets to disprove rather than 1
+		assertEquals(board.handleSuggestion(trueSolution, players.get(1)), trueSolution.getWeapon());
+
+		// but if player 4 makes the accusation, player 1 is the one bale to disprove
+		assertEquals(board.handleSuggestion(trueSolution, players.get(3)), trueSolution.getPerson());
+
 	}
 
 }

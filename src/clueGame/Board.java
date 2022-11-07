@@ -265,7 +265,7 @@ public class Board {
 
 	}
 
-	public Card handleSuggestion(Solution suggestion) {
+	public Card handleSuggestion(Solution suggestion, Player suggestor) {
 
 		return new Card(null, null);
 
