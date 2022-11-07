@@ -19,7 +19,7 @@ public class Solution {
 	}
 
 	// Getters and setters
-	public Card getPerp() {
+	public Card getPerson() {
 		return this.person;
 	}
 
@@ -28,9 +28,29 @@ public class Solution {
 		return this.weapon;
 	}
 
-	public Card getPlace() {
+	public Card getRoom() {
 		// TODO Auto-generated method stub
 		return this.room;
+	}
+
+	public void setPerson(Card person) {
+		this.person = person;
+	}
+
+	public void setWeapon(Card weapon) {
+		this.weapon = weapon;
+	}
+
+	public void setRoom(Card room) {
+		this.room = room;
+	}
+
+	// Return true if two solutions have the same value
+	public boolean equals(Solution solution) {
+		boolean rightPerson = this.person.equals(solution.person);
+		boolean rightWeapon = this.weapon.equals(solution.weapon);
+		boolean rightRoom = this.room.equals(solution.room);
+		return (rightPerson && rightWeapon && rightRoom);
 	}
 
 }

@@ -3,6 +3,7 @@ package clueGame;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Set;
 
 public abstract class Player {
 	// attributes
@@ -11,12 +12,15 @@ public abstract class Player {
 	private int row;
 	private int col;
 	private ArrayList<Card> hand;
-	private HashSet<Card> cardsSeen;
+	private Set<Card> seenCards;
 
 	// constructor
 	protected Player(String name) {
+
 		this.name = name;
 		this.hand = new ArrayList<Card>();
+
+		seenCards = new HashSet<Card>();
 
 	}
 
@@ -25,7 +29,7 @@ public abstract class Player {
 	}
 
 	public void updateSeen(Card seenCard) {
-		cardsSeen.add(seenCard);
+		seenCards.add(seenCard);
 	}
 
 	// Getters and setters
@@ -35,6 +39,11 @@ public abstract class Player {
 
 	public String getName() {
 		return this.name;
+	}
+
+	public Card disproveSuggestion(Solution suggestion) {
+
+		return new Card(null, null);
 	}
 
 }

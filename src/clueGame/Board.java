@@ -14,7 +14,7 @@ import java.util.Set;
 public class Board {
 
 	/*
-	 * variable and methods used for singleton pattern
+	 * Attributes
 	 */
 
 	private int numRows;
@@ -37,7 +37,10 @@ public class Board {
 
 	private ArrayList<Player> players;
 
-	// constructor is private to ensure only one can be created
+	/*
+	 * Constructor
+	 */
+
 	private Board() {
 		super();
 		this.board = new ArrayList<List<BoardCell>>();
@@ -51,14 +54,14 @@ public class Board {
 		this.roomCards = new HashSet<Card>();
 	}
 
-	// this method returns the only Board
 	public static Board getInstance() {
 		return INSTANCE;
 	}
 
 	/*
-	 * initialize the board (since we are using singleton pattern)
+	 * Public Methods
 	 */
+
 	public void initialize() {
 		INSTANCE = new Board();
 		this.board = new ArrayList<List<BoardCell>>();
@@ -93,18 +96,10 @@ public class Board {
 		this.deal();
 	}
 
-	/*
-	 * set the config files in the object to whatever layout, string are.
-	 */
-
 	public void setConfigFiles(String layout, String setup) {
 		this.layout = layout;
 		this.setup = setup;
 	}
-
-	/*
-	 * Load the setup config file into the roomMap.
-	 */
 
 	public void loadSetupConfig() throws FileNotFoundException, BadConfigFormatException {
 		this.roomMap = new HashMap();
@@ -267,6 +262,69 @@ public class Board {
 		this.numRows = rowIndex;
 	}
 
+	public boolean checkAccusation(Solution accusation) {
+		return accusation.equals(this.trueSolution);
+
+	}
+
+	public Card handleSuggestion(Solution suggestion) {
+
+		return new Card(null, null);
+
+	}
+
+	public void calcTargets(BoardCell startCell, int pathlength) {
+		targets = new HashSet<BoardCell>();
+		this.calcTargets(startCell, pathlength, pathlength, new HashSet<BoardCell>());
+	}
+
+	public void deal() {
+		// Create a deck
+		this.deck.addAll(this.playerCards);
+		this.deck.addAll(this.weaponCards);
+		this.deck.addAll(this.roomCards);
+
+		// Select the cards for the solution
+		Card perpetrator = getRandomCard(this.playerCards);
+		Card weapon = getRandomCard(this.weaponCards);
+		Card place = getRandomCard(this.roomCards);
+
+		// Create the solution
+		this.trueSolution = new Solution(perpetrator, weapon, place);
+
+		// Create the deck to deal from
+		Set<Card> dealDeck = new HashSet<Card>();
+		// Add all the vvalues from deck to it
+		dealDeck.addAll(deck);
+
+		// remove the solution from the deck to be dealt
+		dealDeck.remove(perpetrator);
+		dealDeck.remove(weapon);
+		dealDeck.remove(place);
+
+		Card choiceCard;
+
+		// Deal the deck
+		while (!dealDeck.isEmpty()) {
+			// iterate through the payers
+			for (Player player : this.players) {
+				// select a random card
+				choiceCard = getRandomCard(dealDeck);
+				// give the card to the player
+				player.updateHand(choiceCard);
+				// remove the card from the deck
+				dealDeck.remove(choiceCard);
+				// if the deck is empty, break
+				if (dealDeck.size() == 0) {
+					break;
+				}
+			}
+		}
+	}
+
+	/*
+	 * Private Methods
+	 */
 	private void initializeAdjacencies() {
 
 		ArrayList<BoardCell> secretPaths = new ArrayList<BoardCell>();
@@ -377,10 +435,6 @@ public class Board {
 	 * maxpath, Set<BoardCell> visited), but this one is shorter and more human
 	 * readable.
 	 */
-	public void calcTargets(BoardCell startCell, int pathlength) {
-		targets = new HashSet<BoardCell>();
-		this.calcTargets(startCell, pathlength, pathlength, new HashSet<BoardCell>());
-	}
 
 	/*
 	 * Calculate all the targets and add them to the adjacency list, this method is
@@ -401,50 +455,6 @@ public class Board {
 					visited.add(cell);
 					calcTargets(cell, pathlength - 1, maxpath, visited);
 					visited.remove(cell);
-				}
-			}
-		}
-	}
-
-	public void deal() {
-		// Create a deck
-		this.deck.addAll(this.playerCards);
-		this.deck.addAll(this.weaponCards);
-		this.deck.addAll(this.roomCards);
-
-		// Select the cards for the solution
-		Card perpetrator = getRandomCard(this.playerCards);
-		Card weapon = getRandomCard(this.weaponCards);
-		Card place = getRandomCard(this.roomCards);
-
-		// Create the solution
-		this.trueSolution = new Solution(perpetrator, weapon, place);
-
-		// Create the deck to deal from
-		Set<Card> dealDeck = new HashSet<Card>();
-		// Add all the vvalues from deck to it
-		dealDeck.addAll(deck);
-
-		// remove the solution from the deck to be dealt
-		dealDeck.remove(perpetrator);
-		dealDeck.remove(weapon);
-		dealDeck.remove(place);
-
-		Card choiceCard;
-
-		// Deal the deck
-		while (!dealDeck.isEmpty()) {
-			// iterate through the payers
-			for (Player player : this.players) {
-				// select a random card
-				choiceCard = getRandomCard(dealDeck);
-				// give the card to the player
-				player.updateHand(choiceCard);
-				// remove the card from the deck
-				dealDeck.remove(choiceCard);
-				// if the deck is empty, break
-				if (dealDeck.size() == 0) {
-					break;
 				}
 			}
 		}
@@ -471,6 +481,12 @@ public class Board {
 		return randCard;
 	}
 
+	/*
+	 *
+	 * Getters and Setters
+	 * 
+	 */
+
 	public ArrayList<Player> getPlayers() {
 		return players;
 	}
@@ -483,9 +499,6 @@ public class Board {
 		return trueSolution;
 	}
 
-	/*
-	 * Get the room
-	 */
 	public Room getRoom(char c) {
 		return roomMap.get(c);
 	}
@@ -538,6 +551,18 @@ public class Board {
 	 */
 	public Set<BoardCell> getTargets() {
 		return this.targets;
+	}
+
+	public Set<Card> getPlayerCards() {
+		return this.playerCards;
+	}
+
+	public Set<Card> getRoomCards() {
+		return this.roomCards;
+	}
+
+	public Set<Card> getWeaponCards() {
+		return this.weaponCards;
 	}
 
 }

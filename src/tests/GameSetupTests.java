@@ -111,9 +111,9 @@ public class GameSetupTests {
 
 		// Check the solution size and card types
 		assertEquals(solution.size(), 3);
-		assertEquals(CardType.PERSON, solution.getPerp().getCardType());
+		assertEquals(CardType.PERSON, solution.getPerson().getCardType());
 		assertEquals(CardType.WEAPON, solution.getWeapon().getCardType());
-		assertEquals(CardType.ROOM, solution.getPlace().getCardType());
+		assertEquals(CardType.ROOM, solution.getRoom().getCardType());
 
 		// Check the player cards
 
