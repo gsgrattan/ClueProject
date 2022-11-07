@@ -6,11 +6,16 @@ public class Solution {
 	private Card weapon;
 	private Card room;
 
-	// Constructor
+	// Constructors
 	public Solution(Card person, Card weapon, Card room) {
 		this.person = person;
 		this.weapon = weapon;
 		this.room = room;
+	}
+
+	// Copy Constructor, allows for a deepcopy
+	public Solution(Solution that) {
+		this(that.getPerson(), that.getWeapon(), that.getWeapon());
 	}
 
 	//
