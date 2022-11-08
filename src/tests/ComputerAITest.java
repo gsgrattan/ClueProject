@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -15,19 +16,18 @@ import org.junit.jupiter.api.Test;
 import clueGame.Board;
 import clueGame.BoardCell;
 import clueGame.Card;
+import clueGame.CardType;
 import clueGame.ComputerPlayer;
 import clueGame.Solution;
 
 public class ComputerAITest {
 	ComputerPlayer testPlayer;
-	Board board;
-
-	List<List<BoardCell>> gameBoard;
+	private static Board board;
 
 	Set<BoardCell> targets;
 
 	@BeforeAll
-	void setUp() {
+	public static void setUp() {
 		board = Board.getInstance();
 		board.setConfigFiles("ClueLayout.csv", "ClueSetup.txt");
 		// Initialize the board
@@ -37,7 +37,7 @@ public class ComputerAITest {
 	}
 
 	@Test
-	void computerSuggestionTest() {
+	public void computerSuggestionTest() {
 		ArrayList<Card> cards;
 		Character playerRoomChar;
 		Card playerRoom;
@@ -46,12 +46,12 @@ public class ComputerAITest {
 		testPlayer = new ComputerPlayer("testPlayer");
 
 		// Get the board
-		gameBoard = board.getBoard();
+		
 
 		// TEST to make sure a suggestion contains the room it was made in
 		// Set the player's location to the center of the Parlor (2,2) with first index
 		// at 0
-		testPlayer.setLocation(gameBoard.get(2).get(2));
+		testPlayer.setLocation(board.getCell(2,2));
 		playerRoomChar = testPlayer.getLocation().getCellLabel();
 		playerRoom = board.getRoomMap().get(playerRoomChar).getRoomCard();
 
@@ -61,7 +61,7 @@ public class ComputerAITest {
 		assertEquals(suggestion.getRoom(), playerRoom);
 
 		// TEST for the playerCards
-		// Get the Player cards and store them in an arraylist
+		// Get the Player cards and store them in an array list
 
 		cards = new ArrayList(board.getPlayerCards());
 
@@ -107,7 +107,7 @@ public class ComputerAITest {
 
 		// TEST for the weapon Cards
 
-		// Get the weapon cards and store them in an arraylist
+		// Get the weapon cards and store them in an array list
 		cards = new ArrayList(board.getWeaponCards());
 
 		// All but the first two playerCards
@@ -152,23 +152,24 @@ public class ComputerAITest {
 
 	}
 
-	@Before
-	void init() {
-		// Create a target List that is just spaces
-		BoardCell cell1 = new BoardCell(0, 0);
-		BoardCell cell2 = new BoardCell(0, 1);
-
-		targets.add(cell1);
-		targets.add(cell2);
-
-	}
 
 	@Test
-	void computerTargetTest() {
-		testPlayer = new ComputerPlayer("testPlayer");
-		// Two targets that are not rooms
+	public void computerTargetTest() {
+		// Create a target List that is just spaces
 		BoardCell cell0 = new BoardCell(0, 0);
 		BoardCell cell1 = new BoardCell(0, 1);
+		targets = new HashSet<BoardCell>();
+		
+		targets.add(cell0);
+		targets.add(cell1);
+		
+		Card room1 = new Card("testCard1", CardType.ROOM);
+		Card room2 = new Card("testCard2", CardType.ROOM);
+		
+		BoardCell cell2 = new BoardCell(0, 2);
+
+		testPlayer = new ComputerPlayer("testPlayer");
+		// Two targets that are not rooms
 
 		int numTests = 100;
 		int num0 = 0;
@@ -188,15 +189,41 @@ public class ComputerAITest {
 		// Assert that it is choosing between the two non room Cells randomly
 		assertTrue(java.lang.Math.abs(num0 - num1) < numTests / 2);
 
-		// Check that it selects the room it hasn't seen
-		// TODO: get this working with a room it has seen, and a room it hasnt
-
-		BoardCell cell2 = new BoardCell(0, 2);
-		cell2.setRoomLabel(true);
+		//Remove the cell0 to keep testing easy
+		targets.remove(cell0);
+		
+		//make cell2 a room
+		cell2.setCard(room1);
+		//add it to the targets
 		targets.add(cell2);
+		
+		//Select a target
 		BoardCell selected = testPlayer.selectTarget(targets);
-		// Check if they are the same room
+		
+		// Assert that it chooses the room 
 		assertEquals(selected, cell2);
+		
+		//have the player see the room
+		testPlayer.updateSeen(room1);
+		
+		//test that it is randomly selecting between cell1 and cell2 now that it has
+		//seen the room cell2
+		num1 = 0;
+		int num2 = 0;
+		for (int i = 0; i < numTests; ++i) {
+			selected = testPlayer.selectTarget(targets);
+			if (selected.getCol() == 1) {
+				num1++;
+			} else if (selected.getCol() == 2) {
+				num2++;
+			} else {
+				fail();
+			}
+
+		}
+		
+		//Assert that the choice is approximately random
+		assertTrue(java.lang.Math.abs(num1 - num2) < numTests / 2);
 
 	}
 }

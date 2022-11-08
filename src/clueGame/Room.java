@@ -19,6 +19,7 @@ public class Room {
 	 */
 	public void setCenter(BoardCell center) {
 		this.center = center;
+		this.center.setCard(this.roomCard);
 	}
 
 	/*

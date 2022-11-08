@@ -26,8 +26,8 @@ public abstract class Player {
 		this.name = name;
 		this.hand = new ArrayList<Card>();
 		seenCards = new HashSet<Card>();
-
 	}
+	
 
 	public Card disproveSuggestion(Solution suggestion, Player suggestor) {
 		// TODO: Refactor ans clean up method
@@ -73,6 +73,13 @@ public abstract class Player {
 
 	public void updateSeen(Card seenCard) {
 		seenCards.add(seenCard);
+		if(seenCard.getCardType() == CardType.ROOM){
+			
+		} else if (seenCard.getCardType() == CardType.WEAPON) {
+			
+		} else if (seenCard.getCardType() == CardType.PERSON) {
+			
+		}
 
 	}
 

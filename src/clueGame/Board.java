@@ -235,6 +235,7 @@ public class Board {
 						// set the room center
 					} else if (specialOperation == '*') {
 						currentCell.setRoomCenter(true);
+						
 					} else if (roomMap.containsKey(specialOperation)) {
 						// else if the value is another room, then it's a secret passage
 						currentCell.setSecretPassage(specialOperation);
