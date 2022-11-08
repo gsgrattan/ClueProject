@@ -1,5 +1,7 @@
 package clueGame;
 
+import java.util.Set;
+
 public class ComputerPlayer extends Player {
 	// constructor
 	public ComputerPlayer(String name) {
@@ -11,7 +13,8 @@ public class ComputerPlayer extends Player {
 
 	}
 
-	public BoardCell selectTarget() {
+	public BoardCell selectTarget(Set<BoardCell> targets) {
+
 		return new BoardCell(0, 0);
 
 	}

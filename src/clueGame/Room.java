@@ -5,6 +5,7 @@ public class Room {
 	private BoardCell center;
 	private BoardCell labelCell;
 	private boolean isRoom = false;
+	private Card roomCard;
 
 	/*
 	 * Create the Room object, setting the room name to name.
@@ -62,6 +63,14 @@ public class Room {
 	 */
 	public void setIsRoom(boolean isRoom) {
 		this.isRoom = isRoom;
+	}
+
+	public Card getRoomCard() {
+		return roomCard;
+	}
+
+	public void setRoomCard(Card roomCard) {
+		this.roomCard = roomCard;
 	}
 
 }

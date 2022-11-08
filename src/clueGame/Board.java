@@ -26,6 +26,7 @@ public class Board {
 	private String setup;
 	private List<List<BoardCell>> board;
 	private Map<Character, Room> roomMap;
+
 	private Set<BoardCell> targets;
 	private ArrayList<BoardCell> doorways;
 
@@ -121,6 +122,9 @@ public class Board {
 					// create and add the room card
 					card = new Card(splitData[1], CardType.ROOM);
 					this.roomCards.add(card);
+
+					// Add the card that represents the room
+					r.setRoomCard(card);
 
 					// if it's a space
 				} else if (splitData[0].equals("Space")) {
@@ -248,7 +252,7 @@ public class Board {
 			}
 
 			// add the row
-			this.board.add(row);
+			this.getBoard().add(row);
 
 			// increment the row
 			rowIndex++;
@@ -351,7 +355,7 @@ public class Board {
 			for (int colIndex = 0; colIndex < this.numCols; colIndex++) {
 
 				// get the boardcell
-				BoardCell currentCell = this.board.get(rowIndex).get(colIndex);
+				BoardCell currentCell = this.getBoard().get(rowIndex).get(colIndex);
 
 				Room room = this.roomMap.get(currentCell.getCellLabel());
 
@@ -370,22 +374,22 @@ public class Board {
 
 						// Check bounds for "normal cells"
 						if (rowIndex - 1 >= 0) {
-							BoardCell adj = this.board.get(rowIndex - 1).get(colIndex);
+							BoardCell adj = this.getBoard().get(rowIndex - 1).get(colIndex);
 							this.processCell(currentCell, adj);
 						}
 
 						if (rowIndex + 1 < this.numRows) {
-							BoardCell adj = this.board.get(rowIndex + 1).get(colIndex);
+							BoardCell adj = this.getBoard().get(rowIndex + 1).get(colIndex);
 							this.processCell(currentCell, adj);
 						}
 
 						if (colIndex - 1 >= 0) {
-							BoardCell adj = this.board.get(rowIndex).get(colIndex - 1);
+							BoardCell adj = this.getBoard().get(rowIndex).get(colIndex - 1);
 							this.processCell(currentCell, adj);
 						}
 
 						if (colIndex + 1 < this.numCols) {
-							BoardCell adj = this.board.get(rowIndex).get(colIndex + 1);
+							BoardCell adj = this.getBoard().get(rowIndex).get(colIndex + 1);
 							this.processCell(currentCell, adj);
 						}
 					}
@@ -414,19 +418,19 @@ public class Board {
 			BoardCell checkedCell = new BoardCell(-1, -1);
 
 			if (doorway.getDoorDirection() == DoorDirection.UP) {
-				checkedCell = this.board.get(doorway.getRow() - 1).get(doorway.getCol());
+				checkedCell = this.getBoard().get(doorway.getRow() - 1).get(doorway.getCol());
 			}
 
 			else if (doorway.getDoorDirection() == DoorDirection.DOWN) {
-				checkedCell = this.board.get(doorway.getRow() + 1).get(doorway.getCol());
+				checkedCell = this.getBoard().get(doorway.getRow() + 1).get(doorway.getCol());
 			}
 
 			else if (doorway.getDoorDirection() == DoorDirection.LEFT) {
-				checkedCell = this.board.get(doorway.getRow()).get(doorway.getCol() - 1);
+				checkedCell = this.getBoard().get(doorway.getRow()).get(doorway.getCol() - 1);
 			}
 
 			else if (doorway.getDoorDirection() == DoorDirection.RIGHT) {
-				checkedCell = this.board.get(doorway.getRow()).get(doorway.getCol() + 1);
+				checkedCell = this.getBoard().get(doorway.getRow()).get(doorway.getCol() + 1);
 			}
 
 			BoardCell roomCell = roomMap.get(checkedCell.getCellLabel()).getCenterCell();
@@ -545,7 +549,7 @@ public class Board {
 	 * get a specific cell specified by (row, column)
 	 */
 	public BoardCell getCell(int row, int col) {
-		return board.get(row).get(col);
+		return getBoard().get(row).get(col);
 	}
 
 	/*
@@ -560,7 +564,7 @@ public class Board {
 	 * Return the adjacency list of the boardCell at (i, j)
 	 */
 	public Set<BoardCell> getAdjList(int i, int j) {
-		return board.get(i).get(j).getAdjList();
+		return getBoard().get(i).get(j).getAdjList();
 	}
 
 	/*
@@ -580,6 +584,14 @@ public class Board {
 
 	public Set<Card> getWeaponCards() {
 		return this.weaponCards;
+	}
+
+	public List<List<BoardCell>> getBoard() {
+		return board;
+	}
+
+	public Map<Character, Room> getRoomMap() {
+		return roomMap;
 	}
 
 }

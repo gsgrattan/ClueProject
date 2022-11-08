@@ -10,10 +10,15 @@ public abstract class Player {
 	// attributes
 	private String name;
 	private Color color;
-	private int row;
-	private int col;
+
+	private BoardCell location;
+
 	private ArrayList<Card> hand;
 	private Set<Card> seenCards;
+
+	private Set<Card> seenPeopleCards;
+	private Set<Card> seenWeaponCards;
+	private Set<Card> seenRoomCards;
 
 	// constructor
 	protected Player(String name) {
@@ -22,23 +27,6 @@ public abstract class Player {
 		this.hand = new ArrayList<Card>();
 		seenCards = new HashSet<Card>();
 
-	}
-
-	public void updateHand(Card card) {
-		this.hand.add(card);
-	}
-
-	public void updateSeen(Card seenCard) {
-		seenCards.add(seenCard);
-	}
-
-	// Getters and setters
-	public int getHandSize() {
-		return hand.size();
-	}
-
-	public String getName() {
-		return this.name;
 	}
 
 	public Card disproveSuggestion(Solution suggestion, Player suggestor) {
@@ -76,6 +64,33 @@ public abstract class Player {
 
 			}
 		}
+
+	}
+
+	public void updateHand(Card card) {
+		this.hand.add(card);
+	}
+
+	public void updateSeen(Card seenCard) {
+		seenCards.add(seenCard);
+
+	}
+
+	// Getters and setters
+	public int getHandSize() {
+		return hand.size();
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public void setLocation(BoardCell newLocation) {
+		this.location = newLocation;
+	}
+
+	public BoardCell getLocation() {
+		return this.location;
 
 	}
 
