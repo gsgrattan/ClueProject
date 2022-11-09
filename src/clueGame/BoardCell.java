@@ -14,7 +14,7 @@ public class BoardCell {
 	private Boolean isDoorway = false;
 	private char secretPassage = '\0';
 	private Boolean isOccupied = false;
-	private Card card;
+	private Card card = null;
 
 	private Set<BoardCell> adjacencyList;
 
@@ -123,9 +123,17 @@ public class BoardCell {
 	public boolean getOccupied() {
 		return this.isOccupied;
 	}
-	
+
 	public void setCard(Card card) {
 		this.card = card;
 	}
 
+	public Card getCard() {
+		return this.card;
+	}
+
+	@Override
+	public String toString() {
+		return "BoardCell [row=" + row + ", col=" + col + "]";
+	}
 }

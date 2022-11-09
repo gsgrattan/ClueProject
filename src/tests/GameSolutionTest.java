@@ -94,9 +94,9 @@ class GameSolutionTest {
 		Card proof;
 
 		Solution accusation = board.getSolution();
-		Player testPlayer0 = new ComputerPlayer("testPlayer0");
+		Player testPlayer0 = new ComputerPlayer("testPlayer0", board);
 
-		Player testPlayer1 = new ComputerPlayer("testPlayer1");
+		Player testPlayer1 = new ComputerPlayer("testPlayer1", board);
 
 		proof = testPlayer0.disproveSuggestion(accusation, testPlayer1);
 

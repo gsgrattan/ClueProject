@@ -20,17 +20,22 @@ public abstract class Player {
 	private Set<Card> seenWeaponCards;
 	private Set<Card> seenRoomCards;
 
+	private Board board;
+
 	// constructor
-	protected Player(String name) {
+	protected Player(String name, Board board) {
 
 		this.name = name;
+		this.board = board;
 		this.hand = new ArrayList<Card>();
 		seenCards = new HashSet<Card>();
+		seenPeopleCards = new HashSet<Card>();
+		seenWeaponCards = new HashSet<Card>();
+		seenRoomCards = new HashSet<Card>();
 	}
-	
 
 	public Card disproveSuggestion(Solution suggestion, Player suggestor) {
-		// TODO: Refactor ans clean up method
+		// TODO: Refactor and clean up method
 
 		ArrayList<Card> proofList = new ArrayList();
 
@@ -73,14 +78,13 @@ public abstract class Player {
 
 	public void updateSeen(Card seenCard) {
 		seenCards.add(seenCard);
-		if(seenCard.getCardType() == CardType.ROOM){
-			
+		if (seenCard.getCardType() == CardType.ROOM) {
+			this.seenRoomCards.add(seenCard);
 		} else if (seenCard.getCardType() == CardType.WEAPON) {
-			
+			this.seenWeaponCards.add(seenCard);
 		} else if (seenCard.getCardType() == CardType.PERSON) {
-			
+			this.seenPeopleCards.add(seenCard);
 		}
-
 	}
 
 	// Getters and setters
@@ -98,7 +102,21 @@ public abstract class Player {
 
 	public BoardCell getLocation() {
 		return this.location;
-
 	}
 
+	public Board getBoard() {
+		return board;
+	}
+
+	public Set<Card> getSeenPeopleCards() {
+		return seenPeopleCards;
+	}
+
+	public Set<Card> getSeenWeaponCards() {
+		return seenWeaponCards;
+	}
+
+	public Set<Card> getSeenRoomCards() {
+		return seenRoomCards;
+	}
 }

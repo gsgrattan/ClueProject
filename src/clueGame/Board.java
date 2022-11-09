@@ -142,10 +142,10 @@ public class Board {
 					Player player;
 					// if it is the first player, it is a human
 					if (this.players.size() == 0) {
-						player = new HumanPlayer(splitData[1]);
+						player = new HumanPlayer(splitData[1], Board.INSTANCE);
 						// otherwise its a computer
 					} else {
-						player = new ComputerPlayer(splitData[1]);
+						player = new ComputerPlayer(splitData[1], Board.INSTANCE);
 					}
 					// add the player
 					players.add(player);
@@ -235,7 +235,7 @@ public class Board {
 						// set the room center
 					} else if (specialOperation == '*') {
 						currentCell.setRoomCenter(true);
-						
+
 					} else if (roomMap.containsKey(specialOperation)) {
 						// else if the value is another room, then it's a secret passage
 						currentCell.setSecretPassage(specialOperation);
