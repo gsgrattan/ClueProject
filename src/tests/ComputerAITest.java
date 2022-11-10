@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -41,7 +42,7 @@ public class ComputerAITest {
 		Card playerRoom;
 
 		Solution suggestion;
-		testPlayer = new ComputerPlayer("testPlayer", board);
+		testPlayer = new ComputerPlayer("testPlayer", board, board.getCell(2, 2), Color.black);
 
 		// Get the board
 
@@ -164,7 +165,7 @@ public class ComputerAITest {
 
 		BoardCell cell2 = new BoardCell(0, 2);
 
-		testPlayer = new ComputerPlayer("testPlayer", board);
+		testPlayer = new ComputerPlayer("testPlayer", board, board.getCell(0, 0), Color.black);
 		// Two targets that are not rooms
 
 		int numTests = 100;

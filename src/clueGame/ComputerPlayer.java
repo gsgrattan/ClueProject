@@ -1,13 +1,14 @@
 package clueGame;
 
+import java.awt.Color;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
 public class ComputerPlayer extends Player {
 	// constructor
-	public ComputerPlayer(String name, Board board) {
-		super(name, board);
+	public ComputerPlayer(String name, Board board, BoardCell boardcell, Color color) {
+		super(name, board, boardcell, color);
 	}
 
 	// Create a random suggestion based off the not seen cards.

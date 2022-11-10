@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Set;
 
@@ -94,9 +95,9 @@ class GameSolutionTest {
 		Card proof;
 
 		Solution accusation = board.getSolution();
-		Player testPlayer0 = new ComputerPlayer("testPlayer0", board);
+		Player testPlayer0 = new ComputerPlayer("testPlayer0", board, board.getCell(0, 0), Color.black);
 
-		Player testPlayer1 = new ComputerPlayer("testPlayer1", board);
+		Player testPlayer1 = new ComputerPlayer("testPlayer1", board, board.getCell(0, 0), Color.black);
 
 		proof = testPlayer0.disproveSuggestion(accusation, testPlayer1);
 

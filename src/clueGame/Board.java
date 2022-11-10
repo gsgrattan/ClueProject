@@ -1,5 +1,6 @@
 package clueGame;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -141,11 +142,13 @@ public class Board {
 				} else if (splitData[0].equals("Person")) {
 					Player player;
 					// if it is the first player, it is a human
+					// TODO: Assign unique colors and starting locations
 					if (this.players.size() == 0) {
-						player = new HumanPlayer(splitData[1], Board.INSTANCE);
+
+						player = new HumanPlayer(splitData[1], Board.INSTANCE, new BoardCell(0, 0), Color.black);
 						// otherwise its a computer
 					} else {
-						player = new ComputerPlayer(splitData[1], Board.INSTANCE);
+						player = new ComputerPlayer(splitData[1], Board.INSTANCE, new BoardCell(0, 0), Color.black);
 					}
 					// add the player
 					players.add(player);

@@ -23,10 +23,12 @@ public abstract class Player {
 	private Board board;
 
 	// constructor
-	protected Player(String name, Board board) {
+	protected Player(String name, Board board, BoardCell location, Color color) {
 
 		this.name = name;
 		this.board = board;
+		this.color = color;
+		this.location = location;
 		this.hand = new ArrayList<Card>();
 		seenCards = new HashSet<Card>();
 		seenPeopleCards = new HashSet<Card>();
@@ -118,5 +120,10 @@ public abstract class Player {
 
 	public Set<Card> getSeenRoomCards() {
 		return seenRoomCards;
+	}
+
+	public Color getColor() {
+		return this.color;
+
 	}
 }
