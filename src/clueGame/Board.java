@@ -38,6 +38,7 @@ public class Board {
 	private Solution trueSolution;
 
 	private ArrayList<Player> players;
+	private HumanPlayer human;
 
 	/*
 	 * Constructor
@@ -145,7 +146,9 @@ public class Board {
 					// TODO: Assign unique colors and starting locations
 					if (this.players.size() == 0) {
 
-						player = new HumanPlayer(splitData[1], Board.INSTANCE, new BoardCell(0, 0), Color.black);
+						human = new HumanPlayer(splitData[1], Board.INSTANCE, new BoardCell(0, 0), Color.black);
+						player = human;
+
 						// otherwise its a computer
 					} else {
 						player = new ComputerPlayer(splitData[1], Board.INSTANCE, new BoardCell(0, 0), Color.black);
@@ -319,7 +322,7 @@ public class Board {
 
 		// Create the deck to deal from
 		Set<Card> dealDeck = new HashSet<Card>();
-		// Add all the vvalues from deck to it
+		// Add all the values from deck to it
 		dealDeck.addAll(deck);
 
 		// remove the solution from the deck to be dealt
@@ -596,6 +599,11 @@ public class Board {
 
 	public Map<Character, Room> getRoomMap() {
 		return roomMap;
+	}
+
+	public HumanPlayer getHumanPlayer() {
+		return this.human;
+
 	}
 
 }

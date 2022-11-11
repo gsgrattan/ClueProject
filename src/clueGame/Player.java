@@ -126,4 +126,9 @@ public abstract class Player {
 		return this.color;
 
 	}
+
+	public ArrayList<Card> getHand() {
+		// TODO Auto-generated method stub
+		return this.hand;
+	}
 }
