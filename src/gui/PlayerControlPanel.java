@@ -66,8 +66,8 @@ public class PlayerControlPanel extends JPanel {
 	public void setTurn(ComputerPlayer player, int i) {
 		playerName.setText(player.getName());
 
-		Color cum = player.getColor();
-		playerName.setBackground(new Color(cum.getRed(), cum.getGreen(), cum.getBlue(), cum.getAlpha() / 2));
+		Color temp = player.getColor();
+		playerName.setBackground(new Color(temp.getRed(), temp.getGreen(), temp.getBlue(), temp.getAlpha() / 2));
 
 		roll.setText(String.valueOf(i));
 	}
