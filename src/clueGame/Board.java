@@ -216,6 +216,7 @@ public class Board extends JPanel {
 				if (!roomMap.containsKey(cell.charAt(0))) {
 					throw new BadConfigFormatException();
 				} else {
+					// Get the room
 					room = this.roomMap.get(cell.charAt(0));
 
 				}
@@ -251,11 +252,13 @@ public class Board extends JPanel {
 						// set the room label
 					} else if (specialOperation == '#') {
 						currentCell.setRoomLabel(true);
+						// set the cell that cooresponds to the label location
 						room.setLabelCell(currentCell);
 
 						// set the room center
 					} else if (specialOperation == '*') {
 						currentCell.setRoomCenter(true);
+						// Set the cell that corresponds to the roomcenter
 						room.setCenter(currentCell);
 
 					} else if (roomMap.containsKey(specialOperation)) {
@@ -395,12 +398,12 @@ public class Board extends JPanel {
 
 		}
 
-		// Draw the Labels
+		// Draw the Room Labels
 		for (Map.Entry<Character, Room> entry : this.roomMap.entrySet()) {
 			Room room = entry.getValue();
 			room.draw(g, cellWidth, cellHeight);
 		}
-
+		// Draw the doors
 		for (BoardCell door : doorways) {
 			door.drawDoorway(g, cellWidth, cellHeight);
 

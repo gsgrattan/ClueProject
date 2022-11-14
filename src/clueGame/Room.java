@@ -18,6 +18,8 @@ public class Room {
 
 	}
 
+	// Draws the label of the room, Potentially the room's special art if we're
+	// feeling fancy
 	public void draw(Graphics g, int cellWidth, int cellHeight) {
 		// if it is actually a room and not a space or walkway
 		if (this.isRoom) {

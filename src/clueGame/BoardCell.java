@@ -31,18 +31,27 @@ public class BoardCell {
 	}
 
 	public void draw(Graphics g, int cellWidth, int cellHeight) {
+		// Calculate the Cell's current Location
 		int x = cellWidth * col;
 		int y = cellHeight * row;
 
+		// Go through a few different cases of cel type
+
+		// if it's an empty space
 		if (cellLabel == 'X') {
 			g.setColor(Color.black);
 			g.fillRect(x, y, cellWidth, cellHeight);
+
+			// if its a walkway
 		} else if (cellLabel == 'W') {
+			// Draw the yellow background
 			g.setColor(Color.yellow);
 			g.fillRect(x, y, cellWidth, cellHeight);
+			// Draw the black border
 			g.setColor(Color.black);
 			g.drawRect(x, y, cellWidth, cellHeight);
 
+			// Otherwise its a room
 		} else {
 			g.setColor(Color.gray);
 			g.fillRect(x, y, cellWidth, cellHeight);
@@ -51,38 +60,46 @@ public class BoardCell {
 	}
 
 	public void drawDoorway(Graphics g, int cellWidth, int cellHeight) {
-		int doorWidth;
-		int doorLength;
-		int x;
-		int y;
 
-		g.setColor(Color.RED);
+		// Redundancy check, make sure the dor is a doorway
+		if (this.isDoorway()) {
+			// Create values for the door length width and position
+			int doorWidth;
+			int doorLength;
+			int x;
+			int y;
 
-		x = this.getCol() * cellWidth;
-		y = this.getRow() * cellHeight;
+			// set the doorcolor
+			g.setColor(Color.RED);
 
-		if (this.getDoorDirection() == DoorDirection.UP) {
-			doorWidth = cellHeight / 5;
-			doorLength = cellWidth;
+			// Get the location of the current cell
+			x = this.getCol() * cellWidth;
+			y = this.getRow() * cellHeight;
 
-			g.fillRect(x, y - doorWidth, doorLength, doorWidth);
+			// From the door direction set the dimensions and locations
+			if (this.getDoorDirection() == DoorDirection.UP) {
+				doorWidth = cellHeight / 5;
+				doorLength = cellWidth;
 
-		} else if (this.getDoorDirection() == DoorDirection.DOWN) {
-			doorWidth = cellHeight / 5;
-			doorLength = cellWidth;
-			g.fillRect(x, y + cellHeight, doorLength, doorWidth);
-		} else if (this.getDoorDirection() == DoorDirection.LEFT) {
-			doorWidth = cellHeight;
-			doorLength = cellWidth / 5;
-			g.fillRect(x - doorLength, y, doorLength, doorWidth);
+				g.fillRect(x, y - doorWidth, doorLength, doorWidth);
 
-		} else {
-			doorWidth = cellHeight;
-			doorLength = cellWidth / 5;
-			g.fillRect(x + cellWidth, y, doorLength, doorWidth);
+			} else if (this.getDoorDirection() == DoorDirection.DOWN) {
+				doorWidth = cellHeight / 5;
+				doorLength = cellWidth;
+				g.fillRect(x, y + cellHeight, doorLength, doorWidth);
+			} else if (this.getDoorDirection() == DoorDirection.LEFT) {
+				doorWidth = cellHeight;
+				doorLength = cellWidth / 5;
+				g.fillRect(x - doorLength, y, doorLength, doorWidth);
+
+			} else {
+				doorWidth = cellHeight;
+				doorLength = cellWidth / 5;
+				g.fillRect(x + cellWidth, y, doorLength, doorWidth);
+
+			}
 
 		}
-
 	}
 
 	// Get the label
