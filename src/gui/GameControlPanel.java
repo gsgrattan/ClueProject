@@ -1,13 +1,10 @@
 package gui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.GridLayout;
 
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import clueGame.Board;
 import clueGame.ComputerPlayer;
 
 public class GameControlPanel extends JPanel {
@@ -44,25 +41,6 @@ public class GameControlPanel extends JPanel {
 	 * 
 	 * @param args
 	 */
-	public static void main(String[] args) {
-		GameControlPanel panel = new GameControlPanel(); // create the panel
-		JFrame frame = new JFrame(); // create the frame
-
-		Board board = Board.getInstance();
-		board.setConfigFiles("ClueLayout.csv", "ClueSetup.txt");
-		board.initialize();
-
-		frame.setContentPane(panel); // put the panel in the frame
-
-		frame.setSize(750, 180); // size the frame
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // allow it to close
-		frame.setVisible(true); // make it visible
-
-		// test filling in the data
-		panel.setTurn(new ComputerPlayer("Col. Mustard", board, board.getCell(0, 0), Color.blue), 5);
-		panel.setGuess("I have no guess!");
-		panel.setGuessResult("So you have nothing?");
-	}
 
 	private void setGuess(String string) {
 		this.guess = string;

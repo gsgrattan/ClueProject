@@ -2,24 +2,21 @@ package gui;
 
 import java.awt.Color;
 import java.awt.GridLayout;
-import java.util.Set;
 
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
-import clueGame.Board;
 import clueGame.Card;
 import clueGame.CardType;
 import clueGame.HumanPlayer;
 
-public class CardsGUI extends JPanel {
+public class CardPanel extends JPanel {
 
 	private JPKnownCards People, Weapons, Rooms;
 	private HumanPlayer player;
 
-	public CardsGUI(HumanPlayer player) {
+	public CardPanel(HumanPlayer player) {
 		// Set up the player gui, by supplying the human player object
 		this.player = player;
 
@@ -38,57 +35,6 @@ public class CardsGUI extends JPanel {
 		this.add(Rooms);
 		this.add(Weapons);
 
-	}
-
-	public static void main(String[] args) {
-
-		// Get the instance of the board and load in the
-		Board board = Board.getInstance();
-		board.setConfigFiles("ClueLayout.csv", "ClueSetup.txt");
-		board.initialize();
-		board.deal();
-
-		// The first player in the arraylist should be the human player
-		HumanPlayer player = board.getHumanPlayer();
-
-		// Create the GUI instance and the JFRAME to display it
-		CardsGUI panel = new CardsGUI(player);
-		JFrame frame = new JFrame();
-
-		// add the content and display it
-		frame.setContentPane(panel);
-
-		frame.setSize(180, 750); // size the frame
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // allow it to close
-		frame.setVisible(true); //
-
-		// get the deck to load in the cards
-		Set<Card> deck = board.getDeck();
-
-		// Get the size and an index iterator
-		int size = deck.size();
-		int i = 0;
-
-		// iterate through the deck
-		for (Card card : deck) {
-			Color color;
-
-			// if even make orange, if odd make blue
-			if (i % 2 == 0) {
-				color = Color.orange;
-			} else {
-				color = Color.blue;
-
-			}
-			// updatethe seen
-			panel.updateSeen(card, color);
-
-			// just to make sure we don't print all the cards
-			i++;
-			if (i > size / 2) {
-				break;
-			}
-		}
 	}
 
 	// Update the seen cards

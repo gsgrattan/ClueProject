@@ -1,5 +1,7 @@
 package clueGame;
 
+import java.awt.Color;
+import java.awt.Graphics;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,6 +27,61 @@ public class BoardCell {
 		this.row = row;
 		this.col = col;
 		this.adjacencyList = new HashSet<BoardCell>();
+
+	}
+
+	public void draw(Graphics g, int cellWidth, int cellHeight) {
+		int x = cellWidth * col;
+		int y = cellHeight * row;
+
+		if (cellLabel == 'X') {
+			g.setColor(Color.black);
+			g.fillRect(x, y, cellWidth, cellHeight);
+		} else if (cellLabel == 'W') {
+			g.setColor(Color.yellow);
+			g.fillRect(x, y, cellWidth, cellHeight);
+			g.setColor(Color.black);
+			g.drawRect(x, y, cellWidth, cellHeight);
+
+		} else {
+			g.setColor(Color.gray);
+			g.fillRect(x, y, cellWidth, cellHeight);
+
+		}
+	}
+
+	public void drawDoorway(Graphics g, int cellWidth, int cellHeight) {
+		int doorWidth;
+		int doorLength;
+		int x;
+		int y;
+
+		g.setColor(Color.RED);
+
+		x = this.getCol() * cellWidth;
+		y = this.getRow() * cellHeight;
+
+		if (this.getDoorDirection() == DoorDirection.UP) {
+			doorWidth = cellHeight / 5;
+			doorLength = cellWidth;
+
+			g.fillRect(x, y - doorWidth, doorLength, doorWidth);
+
+		} else if (this.getDoorDirection() == DoorDirection.DOWN) {
+			doorWidth = cellHeight / 5;
+			doorLength = cellWidth;
+			g.fillRect(x, y + cellHeight, doorLength, doorWidth);
+		} else if (this.getDoorDirection() == DoorDirection.LEFT) {
+			doorWidth = cellHeight;
+			doorLength = cellWidth / 5;
+			g.fillRect(x - doorLength, y, doorLength, doorWidth);
+
+		} else {
+			doorWidth = cellHeight;
+			doorLength = cellWidth / 5;
+			g.fillRect(x + cellWidth, y, doorLength, doorWidth);
+
+		}
 
 	}
 

@@ -1,5 +1,8 @@
 package clueGame;
 
+import java.awt.Color;
+import java.awt.Graphics;
+
 public class Room {
 	private String name;
 	private BoardCell center;
@@ -12,6 +15,20 @@ public class Room {
 	 */
 	public Room(String name) {
 		this.name = name;
+
+	}
+
+	public void draw(Graphics g, int cellWidth, int cellHeight) {
+		// if it is actually a room and not a space or walkway
+		if (this.isRoom) {
+
+			// draw the labels
+			int x = cellWidth * labelCell.getCol();
+			int y = cellHeight * labelCell.getRow();
+			g.setColor(Color.pink);
+			g.drawString(name, x, y);
+		}
+
 	}
 
 	/*

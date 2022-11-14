@@ -1,6 +1,8 @@
 package clueGame;
 
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -12,7 +14,9 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.Set;
 
-public class Board {
+import javax.swing.JPanel;
+
+public class Board extends JPanel {
 
 	/*
 	 * Attributes
@@ -205,12 +209,17 @@ public class Board {
 			int colIndex = 0;
 			for (String cell : splitData) {
 				BoardCell currentCell = new BoardCell(rowIndex, colIndex);
+				Room room;
 				colIndex++;
 
 				// if the room label is not valid throw an Exception
 				if (!roomMap.containsKey(cell.charAt(0))) {
 					throw new BadConfigFormatException();
+				} else {
+					room = this.roomMap.get(cell.charAt(0));
+
 				}
+
 				// If the cell is a normal cell, just a label
 				if (cell.length() == 1) {
 					currentCell.setCellLabel(cell.charAt(0));
@@ -221,26 +230,33 @@ public class Board {
 					char specialOperation = cell.charAt(1);
 
 					DoorDirection direction;
+
 					// set the door direction
 					if (specialOperation == '^') {
 						direction = DoorDirection.UP;
 						currentCell.setDoorDirection(direction);
+
 					} else if (specialOperation == '>') {
 						direction = DoorDirection.RIGHT;
 						currentCell.setDoorDirection(direction);
+
 					} else if (specialOperation == '<') {
 						direction = DoorDirection.LEFT;
 						currentCell.setDoorDirection(direction);
+
 					} else if (specialOperation == 'v') {
 						direction = DoorDirection.DOWN;
 						currentCell.setDoorDirection(direction);
-					}
-					// set the room label
-					else if (specialOperation == '#') {
+
+						// set the room label
+					} else if (specialOperation == '#') {
 						currentCell.setRoomLabel(true);
+						room.setLabelCell(currentCell);
+
 						// set the room center
 					} else if (specialOperation == '*') {
 						currentCell.setRoomCenter(true);
+						room.setCenter(currentCell);
 
 					} else if (roomMap.containsKey(specialOperation)) {
 						// else if the value is another room, then it's a secret passage
@@ -348,6 +364,48 @@ public class Board {
 				}
 			}
 		}
+	}
+
+	@Override
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+
+		// Get the size of the Board Panel
+		Dimension boardSize = this.getSize();
+
+		// Set the cell dimensions based off of this, the division will naturally round
+		// down
+		int cellHeight = (int) boardSize.getHeight() / this.getNumRows();
+		int cellWidth = (int) boardSize.getWidth() / this.getNumColumns();
+		// Set the cell dimension
+
+		ArrayList<BoardCell> doorways = new ArrayList<BoardCell>();
+
+		// Draw the board cells
+		for (List<BoardCell> row : this.board) {
+			for (BoardCell cell : row) {
+				cell.draw(g, cellWidth, cellHeight);
+				// if the cell is a door, save it for later
+				if (cell.isDoorway()) {
+					doorways.add(cell);
+
+				}
+
+			}
+
+		}
+
+		// Draw the Labels
+		for (Map.Entry<Character, Room> entry : this.roomMap.entrySet()) {
+			Room room = entry.getValue();
+			room.draw(g, cellWidth, cellHeight);
+		}
+
+		for (BoardCell door : doorways) {
+			door.drawDoorway(g, cellWidth, cellHeight);
+
+		}
+
 	}
 
 	/*
