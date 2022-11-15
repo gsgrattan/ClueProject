@@ -31,6 +31,5 @@ public class ClueGamePanel extends JPanel {
 		this.add(board, BorderLayout.CENTER);
 		this.add(controlPanel, BorderLayout.PAGE_END);
 		this.add(cardPanel, BorderLayout.LINE_END);
-
 	}
 }

@@ -61,7 +61,7 @@ public class BoardCell {
 
 	public void drawDoorway(Graphics g, int cellWidth, int cellHeight) {
 
-		// Redundancy check, make sure the dor is a doorway
+		// Redundancy check, make sure the door is a doorway
 		if (this.isDoorway()) {
 			// Create values for the door length width and position
 			int doorWidth;

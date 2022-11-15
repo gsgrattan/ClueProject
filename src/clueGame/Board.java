@@ -99,6 +99,13 @@ public class Board extends JPanel {
 		// initialize the adjacency list
 		this.initializeAdjacencies();
 
+		// Assign initial unique positions to each player
+		this.assignPlayerPositions();
+
+		// Assign initial unique colors to each player. Later put colors in setup
+		// config.
+		this.assignPlayerColors();
+
 	}
 
 	public void setConfigFiles(String layout, String setup) {
@@ -290,6 +297,45 @@ public class Board extends JPanel {
 		this.numRows = rowIndex;
 	}
 
+	// Assign initial unique positions to all players
+	private void assignPlayerPositions() {
+		int numPositions = this.players.size();
+
+		ArrayList<BoardCell> playerPositions = new ArrayList<BoardCell>();
+
+		for (List<BoardCell> row : this.board) {
+			for (BoardCell cell : row) {
+				if (playerPositions.size() != numPositions && cell.getCellLabel() == 'W') {
+					playerPositions.add(cell);
+				} else {
+					break;
+				}
+			}
+			if (playerPositions.size() == numPositions) {
+				break;
+			}
+		}
+
+		for (int i = 0; i < numPositions; i++) {
+			players.get(i).setLocation(playerPositions.get(i));
+		}
+	}
+
+	// Assign initial unique colors to all players
+	private void assignPlayerColors() {
+		Random rng = new Random();
+		float r;
+		float g;
+		float b;
+		for (Player p : this.players) {
+			r = rng.nextFloat();
+			g = rng.nextFloat();
+			b = rng.nextFloat();
+
+			p.setColor(new Color(r, g, b));
+		}
+	}
+
 	public boolean checkAccusation(Solution accusation) {
 		return accusation.equals(this.trueSolution);
 
@@ -407,6 +453,10 @@ public class Board extends JPanel {
 		for (BoardCell door : doorways) {
 			door.drawDoorway(g, cellWidth, cellHeight);
 
+		}
+
+		for (Player player : players) {
+			player.drawPlayer(g, cellWidth, cellHeight);
 		}
 
 	}

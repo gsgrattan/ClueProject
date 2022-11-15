@@ -1,6 +1,7 @@
 package clueGame;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
@@ -89,6 +90,18 @@ public abstract class Player {
 		}
 	}
 
+	public void drawPlayer(Graphics g, int cellWidth, int cellHeight) {
+		int x = cellWidth * this.location.getCol();
+		int y = cellHeight * this.location.getRow();
+
+		g.setColor(this.getColor());
+		g.fillOval(x, y, cellWidth, cellHeight);
+
+		// Draw the black border
+		g.setColor(Color.black);
+		g.drawOval(x, y, cellWidth, cellHeight);
+	}
+
 	// Getters and setters
 	public int getHandSize() {
 		return hand.size();
@@ -122,9 +135,12 @@ public abstract class Player {
 		return seenRoomCards;
 	}
 
+	public void setColor(Color color) {
+		this.color = color;
+	}
+
 	public Color getColor() {
 		return this.color;
-
 	}
 
 	public ArrayList<Card> getHand() {

@@ -17,6 +17,8 @@ public class ClueGame extends JFrame {
 
 		this.add(test, BorderLayout.CENTER);
 
+		this.setTitle("Clue Game - CSCI306");
+
 	}
 
 	public static void main(String[] args) {
