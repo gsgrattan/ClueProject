@@ -11,6 +11,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import clueGame.Board;
 import clueGame.ComputerPlayer;
 
 public class PlayerControlPanel extends JPanel {
@@ -18,10 +19,12 @@ public class PlayerControlPanel extends JPanel {
 	private JPanel currentPlayer, rollPanel;
 	private JLabel turnLabel, rollLabel;
 	private JTextField playerName, roll;
+	private Board board;
 
-	public PlayerControlPanel() {
+	public PlayerControlPanel(Board board) {
 
 		super();
+		this.board = board;
 
 		this.setLayout(new GridLayout(1, 4));
 
@@ -34,7 +37,7 @@ public class PlayerControlPanel extends JPanel {
 		currentPlayer.add(turnLabel, BorderLayout.NORTH);
 
 		playerName = new JTextField(15);
-		playerName.setText("Col. Mustard");
+		playerName.setText(board.getPlayers().get(board.getCurrentPlayerTurn()).getName());
 		playerName.setEditable(false);
 		currentPlayer.add(playerName, BorderLayout.SOUTH);
 
@@ -46,19 +49,19 @@ public class PlayerControlPanel extends JPanel {
 		rollPanel.add(rollLabel);
 
 		roll = new JTextField(5);
-		roll.setText("5");
+		roll.setText(String.valueOf(board.getCurrRoll()));
 		roll.setEditable(false);
 		roll.setSize(1, 1);
 		rollPanel.add(roll);
 
 		// Third panel
 		makeAccusation = new JButton("Make Accusation");
-		makeAccusation.addActionListener(new ButtonListener());
+		makeAccusation.addActionListener(new ButtonListenerAccustaion(this.board));
 		this.add(makeAccusation);
 
 		// Fourth panel
 		next = new JButton("NEXT!");
-		next.addActionListener(new ButtonListener());
+		next.addActionListener(new ButtonListenerNext(this.board, this.roll));
 		this.add(next);
 
 	}
@@ -72,15 +75,39 @@ public class PlayerControlPanel extends JPanel {
 		roll.setText(String.valueOf(i));
 	}
 
-	private class ButtonListener implements ActionListener {
+	class ButtonListenerNext implements ActionListener {
+		private Board board;
+		private JTextField roll;
+
+		public ButtonListenerNext(Board board, JTextField roll) {
+			this.board = board;
+			this.roll = roll;
+		}
+
 		public void actionPerformed(ActionEvent e) {
-			if (makeAccusation.isSelected()) {
+			int roll = this.board.getRoll();
 
-			} else if (next.isSelected()) {
+			// update the roll and the playername for the current turn
+			this.roll.setText(String.valueOf(roll));
+			playerName.setText(board.getPlayers().get(board.getCurrentPlayerTurn()).getName());
 
-			}
+			this.board.nextTurn(roll);
 
+			board.revalidate();
+			board.repaint();
 		}
 	}
 
+	class ButtonListenerAccustaion implements ActionListener {
+		private Board board;
+
+		public ButtonListenerAccustaion(Board board) {
+			this.board = board;
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			System.out.println("Accusation");
+		}
+
+	}
 }

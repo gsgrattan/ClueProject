@@ -23,6 +23,8 @@ public abstract class Player {
 
 	private Board board;
 
+	private int playerNum;
+
 	// constructor
 	protected Player(String name, Board board, BoardCell location, Color color) {
 
@@ -35,6 +37,7 @@ public abstract class Player {
 		seenPeopleCards = new HashSet<Card>();
 		seenWeaponCards = new HashSet<Card>();
 		seenRoomCards = new HashSet<Card>();
+
 	}
 
 	public Card disproveSuggestion(Solution suggestion, Player suggestor) {
@@ -94,6 +97,12 @@ public abstract class Player {
 		int x = cellWidth * this.location.getCol();
 		int y = cellHeight * this.location.getRow();
 
+		if (this.getLocation().isRoomCenter()) {
+
+			x += (cellWidth * playerNum / 2);
+
+		}
+
 		g.setColor(this.getColor());
 		g.fillOval(x, y, cellWidth, cellHeight);
 
@@ -146,5 +155,20 @@ public abstract class Player {
 	public ArrayList<Card> getHand() {
 		// TODO Auto-generated method stub
 		return this.hand;
+	}
+
+	public void setPlayerNum(int num) {
+		this.playerNum = num;
+	}
+
+	public int getPlayerNum() {
+		return this.playerNum;
+
+	}
+
+	public void move(BoardCell move) {
+		this.getLocation().setOccupied(false);
+		move.setOccupied(true);
+		this.setLocation(move);
 	}
 }

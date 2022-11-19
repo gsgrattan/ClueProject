@@ -3,6 +3,8 @@ package clueGame;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -14,9 +16,11 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.Set;
 
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-public class Board extends JPanel {
+public class Board extends JPanel implements MouseListener {
 
 	/*
 	 * Attributes
@@ -44,6 +48,13 @@ public class Board extends JPanel {
 	private ArrayList<Player> players;
 	private HumanPlayer human;
 
+	private int currentPlayerTurn = 0;
+
+	private int cellWidth;
+	private int cellHeight;
+
+	private int currRoll;
+
 	/*
 	 * Constructor
 	 */
@@ -70,6 +81,8 @@ public class Board extends JPanel {
 	 */
 
 	public void initialize() {
+		addMouseListener(this);
+
 		INSTANCE = new Board();
 		this.board = new ArrayList<List<BoardCell>>();
 		this.roomMap = new HashMap<Character, Room>();
@@ -104,7 +117,12 @@ public class Board extends JPanel {
 
 		// Assign initial unique colors to each player. Later put colors in setup
 		// config.
-		this.assignPlayerColors();
+		// this.assignPlayerColors();
+
+		// NOW do the first roll for the player and calculate the first set of targets
+
+		currRoll = this.getRoll();
+		calcTargets(human.getLocation(), currRoll);
 
 	}
 
@@ -155,16 +173,29 @@ public class Board extends JPanel {
 					Player player;
 					// if it is the first player, it is a human
 					// TODO: Assign unique colors and starting locations
+
+					int x = Integer.valueOf(splitData[3]);
+					int y = Integer.valueOf(splitData[4]);
+
+					String[] rgb = splitData[5].strip().split(" ");
+
+					Color c = new Color(Integer.valueOf(rgb[0]), Integer.valueOf(rgb[1]), Integer.valueOf(rgb[2]), 255);
+
 					if (this.players.size() == 0) {
 
-						human = new HumanPlayer(splitData[1], Board.INSTANCE, new BoardCell(0, 0), Color.black);
+						human = new HumanPlayer(splitData[1], Board.INSTANCE, new BoardCell(x, y), c);
 						player = human;
+
+						this.currentPlayerTurn = 0;
 
 						// otherwise its a computer
 					} else {
-						player = new ComputerPlayer(splitData[1], Board.INSTANCE, new BoardCell(0, 0), Color.black);
+						player = new ComputerPlayer(splitData[1], Board.INSTANCE, new BoardCell(x, y), c);
 					}
+					// set the player number
+					player.setPlayerNum(this.players.size());
 					// add the player
+
 					players.add(player);
 
 					card = new Card(splitData[1], CardType.PERSON);
@@ -299,40 +330,12 @@ public class Board extends JPanel {
 
 	// Assign initial unique positions to all players
 	private void assignPlayerPositions() {
-		int numPositions = this.players.size();
+		BoardCell swap;
 
-		ArrayList<BoardCell> playerPositions = new ArrayList<BoardCell>();
-
-		for (List<BoardCell> row : this.board) {
-			for (BoardCell cell : row) {
-				if (playerPositions.size() != numPositions && cell.getCellLabel() == 'W') {
-					playerPositions.add(cell);
-				} else {
-					break;
-				}
-			}
-			if (playerPositions.size() == numPositions) {
-				break;
-			}
-		}
-
-		for (int i = 0; i < numPositions; i++) {
-			players.get(i).setLocation(playerPositions.get(i));
-		}
-	}
-
-	// Assign initial unique colors to all players
-	private void assignPlayerColors() {
-		Random rng = new Random();
-		float r;
-		float g;
-		float b;
-		for (Player p : this.players) {
-			r = rng.nextFloat();
-			g = rng.nextFloat();
-			b = rng.nextFloat();
-
-			p.setColor(new Color(r, g, b));
+		for (Player player : this.players) {
+			swap = player.getLocation();
+			player.setLocation(board.get(swap.getRow()).get(swap.getCol()));
+			player.getLocation().setOccupied(true);
 		}
 	}
 
@@ -424,8 +427,8 @@ public class Board extends JPanel {
 
 		// Set the cell dimensions based off of this, the division will naturally round
 		// down
-		int cellHeight = (int) boardSize.getHeight() / this.getNumRows();
-		int cellWidth = (int) boardSize.getWidth() / this.getNumColumns();
+		cellHeight = (int) boardSize.getHeight() / this.getNumRows();
+		cellWidth = (int) boardSize.getWidth() / this.getNumColumns();
 		// Set the cell dimension
 
 		ArrayList<BoardCell> doorways = new ArrayList<BoardCell>();
@@ -433,12 +436,20 @@ public class Board extends JPanel {
 		// Draw the board cells
 		for (List<BoardCell> row : this.board) {
 			for (BoardCell cell : row) {
+
 				cell.draw(g, cellWidth, cellHeight);
 				// if the cell is a door, save it for later
 				if (cell.isDoorway()) {
 					doorways.add(cell);
-
 				}
+
+			}
+
+		}
+		// if it is the human player
+		if (players.get(currentPlayerTurn).equals(human)) {
+			for (BoardCell cell : targets) {
+				cell.drawTarget(g, cellWidth, cellHeight);
 
 			}
 
@@ -455,6 +466,7 @@ public class Board extends JPanel {
 
 		}
 
+		// Paint the players
 		for (Player player : players) {
 			player.drawPlayer(g, cellWidth, cellHeight);
 		}
@@ -620,6 +632,15 @@ public class Board extends JPanel {
 		return randCard;
 	}
 
+	public int getRoll() {
+		Random rand = new Random();
+		return rand.nextInt(6) + 1;
+	}
+
+	public int getCurrRoll() {
+		return currRoll;
+
+	}
 	/*
 	 *
 	 * Getters and Setters
@@ -714,6 +735,90 @@ public class Board extends JPanel {
 
 	public HumanPlayer getHumanPlayer() {
 		return this.human;
+	}
+
+	public int getCurrentPlayerTurn() {
+		return this.currentPlayerTurn;
+	}
+
+	public void nextTurn(int roll) {
+		currRoll = roll;
+
+		currentPlayerTurn++;
+
+		currentPlayerTurn = currentPlayerTurn % players.size();
+
+		if (players.get(currentPlayerTurn) == this.human) {
+			calcTargets(this.human.getLocation(), roll);
+
+			// Draw targets
+			// wait for selection of target
+
+		} else {
+			ComputerPlayer cumpeepee = (ComputerPlayer) players.get(currentPlayerTurn);
+			calcTargets(cumpeepee.getLocation(), roll);
+			cumpeepee.move(cumpeepee.selectTarget(targets));
+		}
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// If it is the human Player's turn
+
+		if (players.get(currentPlayerTurn).equals(human)) {
+			boolean found = false;
+
+			for (BoardCell target : targets) {
+
+				if (target.containsClick(e.getX(), e.getY(), cellWidth, cellHeight)) {
+					found = true;
+					human.move(target);
+					break;
+
+				}
+
+			}
+			if (found) {
+				this.revalidate();
+				this.repaint();
+			} else {
+				JOptionPane wait = new JOptionPane();
+
+				wait.showMessageDialog(new JFrame(), "Invalid Choice: Please select a highlighted tile",
+						"Invalid Choice", JOptionPane.WARNING_MESSAGE);
+			}
+
+		} else {
+			JOptionPane wait = new JOptionPane();
+
+			wait.showMessageDialog(new JFrame(), "It's not your turn, be patient!", "Patience is a Virtue",
+					JOptionPane.WARNING_MESSAGE);
+
+		}
+
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
 
 	}
 

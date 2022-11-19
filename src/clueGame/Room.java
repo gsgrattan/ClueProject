@@ -8,6 +8,7 @@ public class Room {
 	private BoardCell center;
 	private BoardCell labelCell;
 	private boolean isRoom = false;
+
 	private Card roomCard;
 
 	/*
@@ -23,7 +24,6 @@ public class Room {
 	public void draw(Graphics g, int cellWidth, int cellHeight) {
 		// if it is actually a room and not a space or walkway
 		if (this.isRoom) {
-
 			// draw the labels
 			int x = cellWidth * labelCell.getCol();
 			int y = cellHeight * labelCell.getRow();

@@ -23,6 +23,7 @@ public class ClueGame extends JFrame {
 
 	public static void main(String[] args) {
 		ClueGame test = new ClueGame();
+
 		test.setVisible(true);
 
 	}

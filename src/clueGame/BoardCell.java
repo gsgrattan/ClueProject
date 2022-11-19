@@ -2,6 +2,8 @@ package clueGame;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,12 +15,16 @@ public class BoardCell {
 	private DoorDirection doorDirection;
 	private Boolean roomLabel = false;
 	private Boolean roomCenter = false;
+
 	private Boolean isDoorway = false;
 	private char secretPassage = '\0';
 	private Boolean isOccupied = false;
+
 	private Card card = null;
 
 	private Set<BoardCell> adjacencyList;
+
+	private int x, y;
 
 	/*
 	 * initializer for Boardcell object
@@ -32,8 +38,8 @@ public class BoardCell {
 
 	public void draw(Graphics g, int cellWidth, int cellHeight) {
 		// Calculate the Cell's current Location
-		int x = cellWidth * col;
-		int y = cellHeight * row;
+		x = cellWidth * col;
+		y = cellHeight * row;
 
 		// Go through a few different cases of cel type
 
@@ -56,7 +62,21 @@ public class BoardCell {
 			g.setColor(Color.gray);
 			g.fillRect(x, y, cellWidth, cellHeight);
 
+			// Draw the yellow background
+
 		}
+	}
+
+	public void drawTarget(Graphics g, int cellWidth, int cellHeight) {
+		x = cellWidth * col;
+		y = cellHeight * row;
+
+		g.setColor(Color.cyan);
+		g.fillRect(x, y, cellWidth, cellHeight);
+		// Draw the black border
+		g.setColor(Color.black);
+		g.drawRect(x, y, cellWidth, cellHeight);
+
 	}
 
 	public void drawDoorway(Graphics g, int cellWidth, int cellHeight) {
@@ -100,6 +120,15 @@ public class BoardCell {
 			}
 
 		}
+	}
+
+	public boolean containsClick(int mouseX, int mouseY, int cellWidth, int cellHeight) {
+		Rectangle rect = new Rectangle(x, y, cellWidth, cellHeight);
+
+		// Return true if the box contains the click
+
+		return (rect.contains(new Point(mouseX, mouseY)));
+
 	}
 
 	// Get the label

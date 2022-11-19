@@ -5,6 +5,7 @@ import java.awt.GridLayout;
 
 import javax.swing.JPanel;
 
+import clueGame.Board;
 import clueGame.ComputerPlayer;
 
 public class GameControlPanel extends JPanel {
@@ -17,9 +18,11 @@ public class GameControlPanel extends JPanel {
 
 	/**
 	 * Constructor for the panel, it does 90% of the work
+	 * 
+	 * @param board TODO
 	 */
 
-	public GameControlPanel() {
+	public GameControlPanel(Board board) {
 		name = "huh";
 		guess = "who";
 		guessResult = "ME";
@@ -27,7 +30,7 @@ public class GameControlPanel extends JPanel {
 
 		this.setLayout(new GridLayout(2, 0));
 
-		playerControl = new PlayerControlPanel();
+		playerControl = new PlayerControlPanel(board);
 		this.add(playerControl, BorderLayout.NORTH);
 
 		guessPanel = new GuessPanel();
