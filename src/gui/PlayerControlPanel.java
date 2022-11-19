@@ -14,7 +14,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import clueGame.Board;
-import clueGame.ComputerPlayer;
 
 public class PlayerControlPanel extends JPanel {
 	private JButton makeAccusation, next;
@@ -39,8 +38,15 @@ public class PlayerControlPanel extends JPanel {
 		currentPlayer.add(turnLabel, BorderLayout.NORTH);
 
 		playerName = new JTextField(15);
+
+		// Set the Background color
 		playerName.setText(board.getPlayers().get(board.getCurrentPlayerTurn()).getName());
-		playerName.setEditable(false);
+		Color temp = board.getPlayers().get(board.getCurrentPlayerTurn()).getColor();
+
+		playerName.setBackground(new Color(temp.getRed(), temp.getGreen(), temp.getBlue(), temp.getAlpha() / 2));
+
+		// playerName.setEditable(false);
+
 		currentPlayer.add(playerName, BorderLayout.SOUTH);
 
 		// Second panel
@@ -68,17 +74,6 @@ public class PlayerControlPanel extends JPanel {
 
 	}
 
-	// Set the turn of the computer player
-	// TODO: refactor this, idk what it does
-	public void setTurn(ComputerPlayer player, int i) {
-		playerName.setText(player.getName());
-
-		Color temp = player.getColor();
-		playerName.setBackground(new Color(temp.getRed(), temp.getGreen(), temp.getBlue(), temp.getAlpha() / 2));
-
-		roll.setText(String.valueOf(i));
-	}
-
 	// ButtonListener for the Next button
 	class ButtonListenerNext implements ActionListener {
 		private Board board;
@@ -102,10 +97,19 @@ public class PlayerControlPanel extends JPanel {
 
 					// update the roll and the playername for the current turn
 					this.roll.setText(String.valueOf(roll));
-					playerName.setText(board.getPlayers().get(board.getCurrentPlayerTurn()).getName());
 
 					this.board.nextTurn(roll);
 
+					// Update the Board
+					playerName.setText(board.getPlayers().get(board.getCurrentPlayerTurn()).getName());
+					Color temp = board.getPlayers().get(board.getCurrentPlayerTurn()).getColor();
+
+					playerName.setBackground(
+							new Color(temp.getRed(), temp.getGreen(), temp.getBlue(), temp.getAlpha() / 2));
+
+					playerName.removeAll();
+					playerName.revalidate();
+					playerName.repaint();
 					board.revalidate();
 					board.repaint();
 
@@ -115,7 +119,6 @@ public class PlayerControlPanel extends JPanel {
 					JOptionPane turnNotOver = new JOptionPane();
 					turnNotOver.showMessageDialog(new JFrame(), "Your turn isn't over yet!", "Turn Not Over",
 							JOptionPane.WARNING_MESSAGE);
-
 				}
 
 			} else {
@@ -124,16 +127,24 @@ public class PlayerControlPanel extends JPanel {
 
 				// update the roll and the playername for the current turn
 				this.roll.setText(String.valueOf(roll));
-				playerName.setText(board.getPlayers().get(board.getCurrentPlayerTurn()).getName());
 
 				this.board.nextTurn(roll);
 
+				// Update the board
+				playerName.setText(board.getPlayers().get(board.getCurrentPlayerTurn()).getName());
+				Color temp = board.getPlayers().get(board.getCurrentPlayerTurn()).getColor();
+				playerName
+						.setBackground(new Color(temp.getRed(), temp.getGreen(), temp.getBlue(), temp.getAlpha() / 2));
+				playerName.removeAll();
+				playerName.revalidate();
+				playerName.repaint();
 				board.revalidate();
 				board.repaint();
 
 			}
 
 		}
+
 	}
 
 	// Button Listener for the accusation button

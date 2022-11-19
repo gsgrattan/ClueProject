@@ -6,7 +6,6 @@ import java.awt.GridLayout;
 import javax.swing.JPanel;
 
 import clueGame.Board;
-import clueGame.ComputerPlayer;
 
 public class GameControlPanel extends JPanel {
 
@@ -56,10 +55,4 @@ public class GameControlPanel extends JPanel {
 
 	}
 
-	private void setTurn(ComputerPlayer computerPlayer, int i) {
-		this.playerControl.setTurn(computerPlayer, i);
-
-		// TODO Auto-generated method stub
-
-	}
 }

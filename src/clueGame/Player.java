@@ -95,16 +95,21 @@ public abstract class Player {
 		}
 	}
 
+	// Draws the player
 	public void drawPlayer(Graphics g, int cellWidth, int cellHeight) {
 		int x = cellWidth * this.location.getCol();
 		int y = cellHeight * this.location.getRow();
 
+		// if the current player is in a room
 		if (this.getLocation().isRoomCenter()) {
 
+			// Add an offset based on their player number to ensure that players do not
+			// overlap in a room
 			x += (cellWidth * playerNum / 2);
 
 		}
 
+		// Paint the player and the border
 		g.setColor(this.getColor());
 		g.fillOval(x, y, cellWidth, cellHeight);
 

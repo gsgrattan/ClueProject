@@ -17,7 +17,7 @@ Person, Baby Bush, B, 5, 0, 51 153 255
 Person, Dummy Danica, P, 1, 17, 255 66 173
 Person, Jeinus Junior, G, 18, 24, 255 110 0
 Person, Righteous Ricky, R, 24, 17, 0 255 0
-Person, Tiny Tony, T, 24, 7, 58 4 102
+Person, Tiny Tony, T, 24, 7, 142 32 232
 // weapons
 Weapon, Mountain Dew, M
 Weapon, Catalytic Converter, C
