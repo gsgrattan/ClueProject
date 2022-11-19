@@ -7,7 +7,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -66,6 +68,8 @@ public class PlayerControlPanel extends JPanel {
 
 	}
 
+	// Set the turn of the computer player
+	// TODO: refactor this, idk what it does
 	public void setTurn(ComputerPlayer player, int i) {
 		playerName.setText(player.getName());
 
@@ -75,6 +79,7 @@ public class PlayerControlPanel extends JPanel {
 		roll.setText(String.valueOf(i));
 	}
 
+	// ButtonListener for the Next button
 	class ButtonListenerNext implements ActionListener {
 		private Board board;
 		private JTextField roll;
@@ -85,19 +90,53 @@ public class PlayerControlPanel extends JPanel {
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			int roll = this.board.getRoll();
 
-			// update the roll and the playername for the current turn
-			this.roll.setText(String.valueOf(roll));
-			playerName.setText(board.getPlayers().get(board.getCurrentPlayerTurn()).getName());
+			// If the current player is the human player
+			if (board.getHumanPlayer().equals(board.getPlayers().get(board.getCurrentPlayerTurn()))) {
+				// if the human player has moved
+				// TODO: add logic to determine if the player's turn is over, beyond if they
+				// have moved
+				if (board.getHumanPlayer().getHasMoved()) {
 
-			this.board.nextTurn(roll);
+					int roll = this.board.getRoll();
 
-			board.revalidate();
-			board.repaint();
+					// update the roll and the playername for the current turn
+					this.roll.setText(String.valueOf(roll));
+					playerName.setText(board.getPlayers().get(board.getCurrentPlayerTurn()).getName());
+
+					this.board.nextTurn(roll);
+
+					board.revalidate();
+					board.repaint();
+
+				} else {
+					// else, the player hasn't moved and their turn isn over yet
+
+					JOptionPane turnNotOver = new JOptionPane();
+					turnNotOver.showMessageDialog(new JFrame(), "Your turn isn't over yet!", "Turn Not Over",
+							JOptionPane.WARNING_MESSAGE);
+
+				}
+
+			} else {
+				// Else its a computer player, and process their turn
+				int roll = this.board.getRoll();
+
+				// update the roll and the playername for the current turn
+				this.roll.setText(String.valueOf(roll));
+				playerName.setText(board.getPlayers().get(board.getCurrentPlayerTurn()).getName());
+
+				this.board.nextTurn(roll);
+
+				board.revalidate();
+				board.repaint();
+
+			}
+
 		}
 	}
 
+	// Button Listener for the accusation button
 	class ButtonListenerAccustaion implements ActionListener {
 		private Board board;
 

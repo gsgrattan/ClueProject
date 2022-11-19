@@ -25,6 +25,8 @@ public abstract class Player {
 
 	private int playerNum;
 
+	private boolean hasMoved = false;
+
 	// constructor
 	protected Player(String name, Board board, BoardCell location, Color color) {
 
@@ -166,9 +168,20 @@ public abstract class Player {
 
 	}
 
+	public void setHasMoved(boolean hasMoved) {
+		this.hasMoved = hasMoved;
+
+	}
+
+	public boolean getHasMoved() {
+		return this.hasMoved;
+	}
+
 	public void move(BoardCell move) {
 		this.getLocation().setOccupied(false);
 		move.setOccupied(true);
 		this.setLocation(move);
+		this.hasMoved = true;
+
 	}
 }

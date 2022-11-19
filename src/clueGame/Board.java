@@ -448,9 +448,12 @@ public class Board extends JPanel implements MouseListener {
 		}
 		// if it is the human player
 		if (players.get(currentPlayerTurn).equals(human)) {
-			for (BoardCell cell : targets) {
-				cell.drawTarget(g, cellWidth, cellHeight);
 
+			// if he human has not moved
+			if (!human.getHasMoved()) {
+				for (BoardCell cell : targets) {
+					cell.drawTarget(g, cellWidth, cellHeight);
+				}
 			}
 
 		}
@@ -632,11 +635,13 @@ public class Board extends JPanel implements MouseListener {
 		return randCard;
 	}
 
+	// TODO: refactor these
 	public int getRoll() {
-		Random rand = new Random();
+		Random rand = new Random(System.currentTimeMillis());
 		return rand.nextInt(6) + 1;
 	}
 
+	// I used this to set the initial roll in the ControlPanel
 	public int getCurrRoll() {
 		return currRoll;
 
@@ -740,21 +745,28 @@ public class Board extends JPanel implements MouseListener {
 	public int getCurrentPlayerTurn() {
 		return this.currentPlayerTurn;
 	}
+	// Nextturn, updates the gamestate, given a roll
 
 	public void nextTurn(int roll) {
+
 		currRoll = roll;
 
+		// Since the current player's turn is over make it so they can move again
+		players.get(currentPlayerTurn).setHasMoved(false);
+
+		// update the currentPlayer
 		currentPlayerTurn++;
+		// Modulo by the size to create the looping back to begenning of list
 
 		currentPlayerTurn = currentPlayerTurn % players.size();
 
+		// If it is the human player's turn
 		if (players.get(currentPlayerTurn) == this.human) {
+			// Calculate the targets, they will be drawn in paintComponent()
 			calcTargets(this.human.getLocation(), roll);
 
-			// Draw targets
-			// wait for selection of target
-
 		} else {
+			// Otherwise calculate the computer's move and move them
 			ComputerPlayer cumpeepee = (ComputerPlayer) players.get(currentPlayerTurn);
 			calcTargets(cumpeepee.getLocation(), roll);
 			cumpeepee.move(cumpeepee.selectTarget(targets));
@@ -774,24 +786,32 @@ public class Board extends JPanel implements MouseListener {
 		if (players.get(currentPlayerTurn).equals(human)) {
 			boolean found = false;
 
-			for (BoardCell target : targets) {
+			// if the human has already moved
+			if (!human.getHasMoved()) {
 
-				if (target.containsClick(e.getX(), e.getY(), cellWidth, cellHeight)) {
-					found = true;
-					human.move(target);
-					break;
+				// iterate through the targets
+				for (BoardCell target : targets) {
+					// if the target has the click
+					if (target.containsClick(e.getX(), e.getY(), cellWidth, cellHeight)) {
+						// move the player
+						found = true;
+						human.move(target);
+						break;
+
+					}
 
 				}
+				// if there is a move, revalidate and repaint
+				if (found) {
+					this.revalidate();
+					this.repaint();
+				} else {
+					JOptionPane wait = new JOptionPane();
 
-			}
-			if (found) {
-				this.revalidate();
-				this.repaint();
-			} else {
-				JOptionPane wait = new JOptionPane();
+					wait.showMessageDialog(new JFrame(), "Invalid Choice: Please select a highlighted tile",
+							"Invalid Choice", JOptionPane.WARNING_MESSAGE);
+				}
 
-				wait.showMessageDialog(new JFrame(), "Invalid Choice: Please select a highlighted tile",
-						"Invalid Choice", JOptionPane.WARNING_MESSAGE);
 			}
 
 		} else {
