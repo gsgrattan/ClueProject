@@ -20,6 +20,8 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import gui.SuggestionPanel;
+
 public class Board extends JPanel implements MouseListener {
 
 	/*
@@ -47,6 +49,7 @@ public class Board extends JPanel implements MouseListener {
 
 	private ArrayList<Player> players;
 	private HumanPlayer human;
+	private Map<Card, Player> playerCardMap;
 
 	private int currentPlayerTurn = 0;
 
@@ -132,9 +135,13 @@ public class Board extends JPanel implements MouseListener {
 	}
 
 	public void loadSetupConfig() throws FileNotFoundException, BadConfigFormatException {
-		this.roomMap = new HashMap();
+		this.roomMap = new HashMap<Character, Room>();
 		File set = new File("data/" + this.setup);
 		Scanner reader = new Scanner(set);
+
+		// initialize the playerCardMap
+		playerCardMap = new HashMap<Card, Player>();
+
 		while (reader.hasNextLine()) {
 			String data = reader.nextLine();
 			if (!data.substring(0, 2).equals("//") && !data.equals("\n")) {
@@ -171,8 +178,6 @@ public class Board extends JPanel implements MouseListener {
 					// if it's a Person
 				} else if (splitData[0].equals("Person")) {
 					Player player;
-					// if it is the first player, it is a human
-					// TODO: Assign unique colors and starting locations
 
 					int x = Integer.valueOf(splitData[3]);
 					int y = Integer.valueOf(splitData[4]);
@@ -180,6 +185,8 @@ public class Board extends JPanel implements MouseListener {
 					String[] rgb = splitData[5].strip().split(" ");
 
 					Color c = new Color(Integer.valueOf(rgb[0]), Integer.valueOf(rgb[1]), Integer.valueOf(rgb[2]), 255);
+
+					// if it is the first player, it is a human
 
 					if (this.players.size() == 0) {
 
@@ -200,6 +207,9 @@ public class Board extends JPanel implements MouseListener {
 
 					card = new Card(splitData[1], CardType.PERSON);
 					this.playerCards.add(card);
+
+					// Insert the player and it's card into the map
+					this.playerCardMap.put(card, player);
 
 					// Else there's something wrong with the setup file
 				} else {
@@ -453,6 +463,21 @@ public class Board extends JPanel implements MouseListener {
 			if (!human.getHasMoved()) {
 				for (BoardCell cell : targets) {
 					cell.drawTarget(g, cellWidth, cellHeight);
+				}
+			} else {
+
+				// If the current location is a room
+				if (human.getLocation().isRoomCenter()) {
+					// Prompt them to make a suggestion
+
+					JFrame suggestionFrame = new JFrame();
+					SuggestionPanel suggestionPanel = new SuggestionPanel(human, this);
+					suggestionFrame.add(suggestionPanel);
+					suggestionFrame.setSize(300, 300);
+					suggestionFrame.setTitle("Make a Suggestion");
+
+					suggestionFrame.setVisible(true);
+
 				}
 			}
 
@@ -719,7 +744,7 @@ public class Board extends JPanel implements MouseListener {
 	}
 
 	public Set<Card> getPlayerCards() {
-		return this.playerCards;
+		return playerCards;
 	}
 
 	public Set<Card> getRoomCards() {
@@ -767,9 +792,18 @@ public class Board extends JPanel implements MouseListener {
 
 		} else {
 			// Otherwise calculate the computer's move and move them
-			ComputerPlayer cumpeepee = (ComputerPlayer) players.get(currentPlayerTurn);
-			calcTargets(cumpeepee.getLocation(), roll);
-			cumpeepee.move(cumpeepee.selectTarget(targets));
+			ComputerPlayer computer = (ComputerPlayer) players.get(currentPlayerTurn);
+			calcTargets(computer.getLocation(), roll);
+			computer.move(computer.selectTarget(targets));
+
+			// If we're in a room, make a suggestion
+			if (computer.getLocation().isRoomCenter()) {
+				Solution suggestion = computer.createSuggestion();
+
+				Player suggested = playerCardMap.get(suggestion.getPerson());
+				suggested.move(computer.getLocation());
+
+			}
 		}
 	}
 

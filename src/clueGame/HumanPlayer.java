@@ -8,4 +8,5 @@ public class HumanPlayer extends Player {
 	public HumanPlayer(String name, Board board, BoardCell boardcell, Color color) {
 		super(name, board, boardcell, color);
 	}
+
 }

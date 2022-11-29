@@ -44,6 +44,7 @@ public class PlayerControlPanel extends JPanel {
 		Color temp = board.getPlayers().get(board.getCurrentPlayerTurn()).getColor();
 
 		playerName.setBackground(new Color(temp.getRed(), temp.getGreen(), temp.getBlue(), temp.getAlpha() / 2));
+		playerName.setEditable(false);
 
 		// playerName.setEditable(false);
 
@@ -138,6 +139,7 @@ public class PlayerControlPanel extends JPanel {
 				playerName.removeAll();
 				playerName.revalidate();
 				playerName.repaint();
+
 				board.revalidate();
 				board.repaint();
 

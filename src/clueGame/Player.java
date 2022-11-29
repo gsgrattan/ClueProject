@@ -186,6 +186,11 @@ public abstract class Player {
 		this.getLocation().setOccupied(false);
 		move.setOccupied(true);
 		this.setLocation(move);
+		if (move.isRoomCenter()) {
+
+			this.updateSeen(move.getCard());
+		}
+
 		this.hasMoved = true;
 
 	}

@@ -9,7 +9,7 @@ import javax.swing.JPanel;
 import clueGame.Board;
 
 public class ClueGamePanel extends JPanel {
-	private static Board board;
+	private Board board;
 	private static GameControlPanel controlPanel;
 	private static CardPanel cardPanel;
 
