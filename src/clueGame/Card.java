@@ -25,4 +25,9 @@ public class Card {
 		return this.cardName;
 	}
 
+	@Override
+	public String toString() {
+		return cardName;
+	}
+
 }

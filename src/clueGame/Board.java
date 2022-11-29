@@ -20,7 +20,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import gui.SuggestionPanel;
+import gui.SuggestionDialog;
 
 public class Board extends JPanel implements MouseListener {
 
@@ -464,21 +464,6 @@ public class Board extends JPanel implements MouseListener {
 				for (BoardCell cell : targets) {
 					cell.drawTarget(g, cellWidth, cellHeight);
 				}
-			} else {
-
-				// If the current location is a room
-				if (human.getLocation().isRoomCenter()) {
-					// Prompt them to make a suggestion
-
-					JFrame suggestionFrame = new JFrame();
-					SuggestionPanel suggestionPanel = new SuggestionPanel(human, this);
-					suggestionFrame.add(suggestionPanel);
-					suggestionFrame.setSize(300, 300);
-					suggestionFrame.setTitle("Make a Suggestion");
-
-					suggestionFrame.setVisible(true);
-
-				}
 			}
 
 		}
@@ -820,7 +805,7 @@ public class Board extends JPanel implements MouseListener {
 		if (players.get(currentPlayerTurn).equals(human)) {
 			boolean found = false;
 
-			// if the human has already moved
+			// if the human hasn't already moved
 			if (!human.getHasMoved()) {
 
 				// iterate through the targets
@@ -835,10 +820,27 @@ public class Board extends JPanel implements MouseListener {
 					}
 
 				}
-				// if there is a move, revalidate and repaint
+				// if there is a move, revalidate and repaint it
 				if (found) {
 					this.revalidate();
 					this.repaint();
+
+					// If the current location is a room
+					if (human.getLocation().isRoomCenter()) {
+						// Prompt them to make a suggestion
+
+						SuggestionDialog suggestionDialog = new SuggestionDialog(human, this);
+
+						// TODO: Implement this as a JDialog
+//							JDialog suggestionDialog = new JDialog(suggestionFrame, Dialog.ModalityType.DOCUMENT_MODAL);
+//							suggestionDialog.add(suggestionPanel);
+
+						suggestionDialog.setSize(300, 300);
+						suggestionDialog.setTitle("Make a Suggestion");
+						suggestionDialog.setVisible(true);
+
+					}
+
 				} else {
 					JOptionPane wait = new JOptionPane();
 
@@ -848,7 +850,9 @@ public class Board extends JPanel implements MouseListener {
 
 			}
 
-		} else {
+		} else
+
+		{
 			JOptionPane wait = new JOptionPane();
 
 			wait.showMessageDialog(new JFrame(), "It's not your turn, be patient!", "Patience is a Virtue",
