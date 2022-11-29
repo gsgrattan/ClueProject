@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.TreeMap;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -354,10 +355,14 @@ public class Board extends JPanel implements MouseListener {
 
 	}
 
-	public Card handleSuggestion(Solution suggestion, Player suggestor) {
+	// TODO: refactor so that it returns both the disproving card and the player who
+	// displayed it
+	public Map<Card, Player> handleSuggestion(Solution suggestion, Player suggestor) {
+		TreeMap<Card, Player> result = new TreeMap<Card, Player>();
 		Player player;
+		Card card = null;
+
 		int i = this.players.indexOf(suggestor);
-		Card result = null;
 
 		do {
 			i++;
@@ -368,8 +373,9 @@ public class Board extends JPanel implements MouseListener {
 
 			player = this.players.get(i);
 
-			result = player.disproveSuggestion(suggestion, suggestor);
-			if (result != null) {
+			card = player.disproveSuggestion(suggestion, suggestor);
+			if (card != null) {
+				result.put(card, player);
 				break;
 			}
 
@@ -827,17 +833,10 @@ public class Board extends JPanel implements MouseListener {
 
 					// If the current location is a room
 					if (human.getLocation().isRoomCenter()) {
+
 						// Prompt them to make a suggestion
 
 						SuggestionDialog suggestionDialog = new SuggestionDialog(human, this);
-
-						// TODO: Implement this as a JDialog
-//							JDialog suggestionDialog = new JDialog(suggestionFrame, Dialog.ModalityType.DOCUMENT_MODAL);
-//							suggestionDialog.add(suggestionPanel);
-
-						suggestionDialog.setSize(300, 300);
-						suggestionDialog.setTitle("Make a Suggestion");
-						suggestionDialog.setVisible(true);
 
 					}
 

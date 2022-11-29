@@ -5,7 +5,6 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Set;
-import java.util.TreeMap;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -20,28 +19,27 @@ import clueGame.Card;
 import clueGame.Player;
 import clueGame.Solution;
 
-public class SuggestionDialog extends JDialog {
+public class AccusationDialog extends JDialog {
 	private Board board;
-	private Player suggestor;
+	private Player accuser;
 
 	private JTextField currRoom;
+	private JComboBox<Card> roomCombo;
 	private JComboBox<Card> personCombo;
 	private JComboBox<Card> weaponCombo;
 
-	private Card roomCard = null;
-	private Card personCard = null;
-	private Card weaponCard = null;
+	private Card roomCard;
+	private Card personCard;
+	private Card weaponCard;
 
 	private JButton submit, cancel;
 
-	Solution sugggestion;
+	private Solution accusation;
 
-	public SuggestionDialog(Player player, Board board) {
+	public AccusationDialog(Player player, Board board) {
 		super(ClueGame.getInstance(), Dialog.ModalityType.DOCUMENT_MODAL);
-		this.suggestor = player;
-		this.board = board;
 
-		roomCard = player.getLocation().getCard();
+		this.board = board;
 
 		this.setSize(300, 300);
 		this.setTitle("Make a Suggestion");
@@ -51,19 +49,15 @@ public class SuggestionDialog extends JDialog {
 		JLabel personLabel = new JLabel("Person");
 		JLabel weaponLabel = new JLabel("Weapon");
 
-		currRoom = new JTextField();
-		currRoom.setText(roomCard.getName());
-		currRoom.setEditable(false);
-
+		roomCombo = createComboBox(board.getRoomCards());
 		personCombo = createComboBox(board.getPlayerCards());
 		weaponCombo = createComboBox(board.getWeaponCards());
 
 		submit = new JButton("Submit");
 		cancel = new JButton("Cancel");
 
-		// Add the combo Boxes
 		this.add(roomLabel);
-		this.add(currRoom);
+		this.add(roomCombo);
 
 		this.add(personLabel);
 		this.add(personCombo);
@@ -71,16 +65,14 @@ public class SuggestionDialog extends JDialog {
 		this.add(weaponLabel);
 		this.add(weaponCombo);
 
-		// Add the buttons
 		this.add(submit);
 		this.add(cancel);
 
-		// Add the action Listeners
+		ComboListener comboListener = new ComboListener();
 
-		ComboListener listener = new ComboListener();
-
-		personCombo.addActionListener(listener);
-		weaponCombo.addActionListener(listener);
+		roomCombo.addActionListener(comboListener);
+		personCombo.addActionListener(comboListener);
+		weaponCombo.addActionListener(comboListener);
 
 		ButtonListener buttonListener = new ButtonListener();
 
@@ -88,6 +80,7 @@ public class SuggestionDialog extends JDialog {
 		cancel.addActionListener(buttonListener);
 
 		this.setVisible(true);
+
 	}
 
 	public JComboBox<Card> createComboBox(Set<Card> cards) {
@@ -101,7 +94,10 @@ public class SuggestionDialog extends JDialog {
 
 	private class ComboListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			if (e.getSource() == personCombo) {
+			if (e.getSource() == roomCombo) {
+				roomCard = (Card) roomCombo.getSelectedItem();
+
+			} else if (e.getSource() == personCombo) {
 				personCard = (Card) personCombo.getSelectedItem();
 
 			} else if (e.getSource() == weaponCombo) {
@@ -113,17 +109,11 @@ public class SuggestionDialog extends JDialog {
 
 	private class ButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			TreeMap<Card, Player> suggestionHandling;
-			Card disproofCard;
-			Player disproofPlayer;
 
 			if (e.getSource() == cancel) {
-				// Close the Jframe
 				setVisible(false);
 
-			}
-
-			else if (e.getSource() == submit) {
+			} else if (e.getSource() == submit) {
 				// Ensure that all three Cards have been selected (none of them are null)
 
 				// If one of them hasn't been selected (i.e it is null)
@@ -131,16 +121,12 @@ public class SuggestionDialog extends JDialog {
 					JOptionPane splash = new JOptionPane();
 					JFrame splashFrame = new JFrame();
 
-					splash.showMessageDialog(splashFrame, "Please complete your card selction for the suggestion",
-							"Invalid Suggestion", JOptionPane.INFORMATION_MESSAGE);
-				} else {
-					// else the cards for the suggestion have been chosen
-					sugggestion = new Solution(personCard, weaponCard, roomCard);
+					splash.showMessageDialog(splashFrame, "Please complete your card selction for the accusation",
+							"Invalid Accusation", JOptionPane.INFORMATION_MESSAGE);
 
-					// Handle the suggestion
-					suggestionHandling = (TreeMap<Card, Player>) board.handleSuggestion(sugggestion, suggestor);
-					disproofCard = suggestionHandling.firstEntry().getKey();
-					disproofPlayer = suggestionHandling.firstEntry().getValue();
+				} else {
+					// else all cards for the accusation have been chosen
+					accusation = new Solution(personCard, weaponCard, roomCard);
 
 				}
 
@@ -149,5 +135,4 @@ public class SuggestionDialog extends JDialog {
 		}
 
 	}
-
 }

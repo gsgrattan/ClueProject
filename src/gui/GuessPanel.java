@@ -27,7 +27,7 @@ public class GuessPanel extends JPanel {
 
 		guessResult = new JPanel();
 		guessResult.setLayout(new GridLayout(1, 0));
-		guessResult.setBorder(new TitledBorder(new EtchedBorder(), "Guess"));
+		guessResult.setBorder(new TitledBorder(new EtchedBorder(), "Guess Result"));
 
 		currGuessResult = new JTextField();
 		currGuessResult.setEditable(false);

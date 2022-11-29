@@ -158,7 +158,9 @@ public class PlayerControlPanel extends JPanel {
 		}
 
 		public void actionPerformed(ActionEvent e) {
-			System.out.println("Accusation");
+
+			AccusationDialog accusationDialog = new AccusationDialog(board.getHumanPlayer(), board);
+
 		}
 
 	}
