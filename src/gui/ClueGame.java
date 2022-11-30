@@ -38,4 +38,21 @@ public class ClueGame extends JFrame {
 		return this.gamePanel;
 	}
 
+	public static void endGame() {
+		INSTANCE.setVisible(false);
+		INSTANCE.dispose();
+
+	}
+
+	public void newGame() {
+		// Set it to false
+		INSTANCE.setVisible(false);
+		// Create a new game
+		INSTANCE = new ClueGame();
+
+		// Make it visible
+		INSTANCE.setVisible(true);
+
+	}
+
 }

@@ -431,7 +431,7 @@ public class Board extends JPanel implements MouseListener {
 				}
 			}
 		}
-		System.out.println(this.playerCards.size());
+		System.out.println(trueSolution);
 	}
 
 	@Override
