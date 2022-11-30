@@ -57,7 +57,11 @@ public class JPKnownCards extends JPanel {
 		// initialize the hand
 		for (Card card : player.getHand()) {
 			if (card.getCardType() == this.type) {
-				this.handPanel.updatePanel(card, Color.white);
+				if (card.getCardType().equals(CardType.PERSON)) {
+					this.handPanel.updatePanel(card, card.getColor());
+				} else {
+					this.handPanel.updatePanel(card, Color.white);
+				}
 			}
 		}
 

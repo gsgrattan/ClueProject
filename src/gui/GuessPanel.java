@@ -40,11 +40,15 @@ public class GuessPanel extends JPanel {
 
 	public void setGuess(String string) {
 		currGuess.setText(string);
+		this.revalidate();
+		this.repaint();
 
 	}
 
 	public void setGuessResult(String string) {
 		currGuessResult.setText(string);
+		this.revalidate();
+		this.repaint();
 
 	}
 

@@ -12,12 +12,12 @@ Room, Hall, H
 Space, Unused, X
 Space, Walkway, W
 //Characters
-Person, Daddy Dale, D
-Person, Baby Bush, B
-Person, Dummy Danica, P 
-Person, Jeinus Junior, G
-Person, Righteous Ricky, R
-Person, Tiny Tony, T
+Person, Daddy Dale, D, 1, 7, 255 0 0
+Person, Baby Bush, B, 5, 0, 51 153 255
+Person, Dummy Danica, P, 1, 17, 255 66 173
+Person, Jeinus Junior, G, 18, 20, 255 110 0
+Person, Righteous Ricky, R, 20, 17, 0 255 0
+Person, Tiny Tony, T, 20, 7, 142 32 232
 // weapons
 Weapon, Mountain Dew, M
 Weapon, Catalytic Converter, C

@@ -147,17 +147,17 @@ class GameSolutionTest {
 
 		// Assert that the Player will return the correct card to disprove the
 		// suggestion
-		assertEquals(board.handleSuggestion(trueSolution, players.get(1)), trueSolution.getPerson());
+		assertEquals(board.handleSuggestion(trueSolution, players.get(1)).getCard(), trueSolution.getPerson());
 
 		// Have another player
 		players.get(2).updateHand(trueSolution.getWeapon());
 
 		// Check that the player order is obeyed, i.e. if player 2 makes a suggestion
 		// and players 3 and 1 can disprove it, player 3 gets to disprove rather than 1
-		assertEquals(board.handleSuggestion(trueSolution, players.get(1)), trueSolution.getWeapon());
+		assertEquals(board.handleSuggestion(trueSolution, players.get(1)).getCard(), trueSolution.getWeapon());
 
 		// but if player 4 makes the accusation, player 1 is the one bale to disprove
-		assertEquals(board.handleSuggestion(trueSolution, players.get(3)), trueSolution.getPerson());
+		assertEquals(board.handleSuggestion(trueSolution, players.get(3)).getCard(), trueSolution.getPerson());
 
 	}
 

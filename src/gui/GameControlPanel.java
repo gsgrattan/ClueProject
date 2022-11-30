@@ -44,12 +44,12 @@ public class GameControlPanel extends JPanel {
 	 * @param args
 	 */
 
-	private void setGuess(String string) {
+	public void setGuess(String string) {
 		this.guess = string;
 		guessPanel.setGuess(string);
 	}
 
-	private void setGuessResult(String string) {
+	public void setGuessResult(String string) {
 		this.guessResult = string;
 		guessPanel.setGuessResult(string);
 

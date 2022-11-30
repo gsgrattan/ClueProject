@@ -1,6 +1,7 @@
 package clueGame;
 
 public class Solution {
+
 	// Attributes
 	private Card person;
 	private Card weapon;
@@ -16,6 +17,11 @@ public class Solution {
 	// Copy Constructor, allows for a deepcopy
 	public Solution(Solution that) {
 		this(that.getPerson(), that.getWeapon(), that.getWeapon());
+	}
+
+	@Override
+	public String toString() {
+		return person + ", " + weapon + ", " + room;
 	}
 
 	//

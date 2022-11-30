@@ -13,6 +13,7 @@ public abstract class Player {
 	private Color color;
 
 	private BoardCell location;
+	private boolean movedAgainstWill;
 
 	private ArrayList<Card> hand;
 	private Set<Card> seenCards;
@@ -182,16 +183,25 @@ public abstract class Player {
 		return this.hasMoved;
 	}
 
+	public void setMovedAgainstWill(boolean value) {
+		this.movedAgainstWill = value;
+	}
+
+	public boolean getMovedAgainstWill() {
+		return this.movedAgainstWill;
+	}
+
 	public void move(BoardCell move) {
 		this.getLocation().setOccupied(false);
 		move.setOccupied(true);
 		this.setLocation(move);
-		if (move.isRoomCenter()) {
+//		if (move.isRoomCenter()) {
+//
+//			this.updateSeen(move.getCard());
+//		}
 
-			this.updateSeen(move.getCard());
+		if (!this.movedAgainstWill) {
+			this.hasMoved = true;
 		}
-
-		this.hasMoved = true;
-
 	}
 }

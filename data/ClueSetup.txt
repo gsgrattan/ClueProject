@@ -1,13 +1,13 @@
 // Rooms and room cards
-Room, Parlor, P
-Room, Kitchen, K
-Room, Mud Room, M 
-Room, Library, L
-Room, Theater, T
-Room, Bedroom, B
-Room, Observatory, O
-Room, Bathroom, A
-Room, Office, F
+Room, Daytona, P
+Room, Richmond, K
+Room, Bristol, M 
+Room, Indianapolis, L
+Room, Talladega, T
+Room, Pit, B
+Room, AutoZone, O
+Room, Bass Pro Shops, A
+Room, Charlotte, F
 // Other spaces on board 
 Space, Unused, X
 Space, Walkway, W

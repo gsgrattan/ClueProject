@@ -45,4 +45,12 @@ public class ClueGamePanel extends JPanel {
 						+ "!\nCan you find the solution before the Computer Players" + "?",
 				"Welcome to ClueCar", JOptionPane.INFORMATION_MESSAGE);
 	}
+
+	public static GameControlPanel getControlPanel() {
+		return controlPanel;
+	}
+
+	public static CardPanel getCardPanel() {
+		return cardPanel;
+	}
 }

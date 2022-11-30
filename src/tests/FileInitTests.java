@@ -39,15 +39,15 @@ public class FileInitTests {
 		assertEquals(LEGEND_SIZE, board.getNumRooms());
 
 		// To ensure data is correctly loaded, test retrieving all rooms
-		assertEquals("Parlor", board.getRoom('P').getName());
-		assertEquals("Kitchen", board.getRoom('K').getName());
-		assertEquals("Mud Room", board.getRoom('M').getName());
-		assertEquals("Library", board.getRoom('L').getName());
-		assertEquals("Theater", board.getRoom('T').getName());
-		assertEquals("Bedroom", board.getRoom('B').getName());
-		assertEquals("Observatory", board.getRoom('O').getName());
-		assertEquals("Bathroom", board.getRoom('A').getName());
-		assertEquals("Office", board.getRoom('F').getName());
+		assertEquals("Daytona", board.getRoom('P').getName());
+		assertEquals("Richmond", board.getRoom('K').getName());
+		assertEquals("Bristol", board.getRoom('M').getName());
+		assertEquals("Indianapolis", board.getRoom('L').getName());
+		assertEquals("Talladega", board.getRoom('T').getName());
+		assertEquals("Pit", board.getRoom('B').getName());
+		assertEquals("AutoZone", board.getRoom('O').getName());
+		assertEquals("Bass Pro Shops", board.getRoom('A').getName());
+		assertEquals("Charlotte", board.getRoom('F').getName());
 	}
 
 	@Test
@@ -102,7 +102,7 @@ public class FileInitTests {
 
 		assertTrue(room != null);
 
-		assertEquals(room.getName(), "Parlor");
+		assertEquals(room.getName(), "Daytona");
 		assertFalse(cell.isLabel());
 		assertFalse(cell.isRoomCenter());
 		assertFalse(cell.isDoorway());
@@ -111,7 +111,7 @@ public class FileInitTests {
 		cell = board.getCell(3, 12);
 		room = board.getRoom(cell);
 		assertTrue(room != null);
-		assertEquals(room.getName(), "Kitchen");
+		assertEquals(room.getName(), "Richmond");
 		assertTrue(cell.isLabel());
 		assertTrue(room.getLabelCell() == cell);
 
@@ -119,7 +119,7 @@ public class FileInitTests {
 		cell = board.getCell(22, 12);
 		room = board.getRoom(cell);
 		assertTrue(room != null);
-		assertEquals(room.getName(), "Observatory");
+		assertEquals(room.getName(), "AutoZone");
 		assertTrue(cell.isRoomCenter());
 		assertTrue(room.getCenterCell() == cell);
 
@@ -127,7 +127,7 @@ public class FileInitTests {
 		cell = board.getCell(22, 24);
 		room = board.getRoom(cell);
 		assertTrue(room != null);
-		assertEquals(room.getName(), "Office");
+		assertEquals(room.getName(), "Charlotte");
 		assertTrue(cell.getSecretPassage() == 'P');
 
 		// test a walkway

@@ -76,7 +76,6 @@ public class ComputerPlayer extends Player {
 			}
 		}
 
-		// Unreachable
 		if (roomCell != null && !this.getSeenRoomCards().contains(roomCell.getCard())) {
 			return roomCell;
 		} else {

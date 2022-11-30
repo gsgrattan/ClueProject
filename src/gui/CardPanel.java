@@ -50,12 +50,15 @@ public class CardPanel extends JPanel {
 		} else {
 			Weapons.updateSeen(card, color);
 		}
-		// readd all the cells and revalidate and repaint
+		// read all the cells and revalidate and repaint
 		this.add(People);
 		this.add(Rooms);
 		this.add(Weapons);
 
+		this.player.updateSeen(card);
+
 		this.revalidate();
 		this.repaint();
+
 	}
 }

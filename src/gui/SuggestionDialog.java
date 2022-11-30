@@ -1,11 +1,11 @@
 package gui;
 
+import java.awt.Color;
 import java.awt.Dialog;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Set;
-import java.util.TreeMap;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -17,8 +17,10 @@ import javax.swing.JTextField;
 
 import clueGame.Board;
 import clueGame.Card;
+import clueGame.CardType;
 import clueGame.Player;
 import clueGame.Solution;
+import clueGame.SuggestionResult;
 
 public class SuggestionDialog extends JDialog {
 	private Board board;
@@ -113,9 +115,11 @@ public class SuggestionDialog extends JDialog {
 
 	private class ButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			TreeMap<Card, Player> suggestionHandling;
+			SuggestionResult suggestionHandling;
 			Card disproofCard;
 			Player disproofPlayer;
+
+			GameControlPanel gameControlPanel = ClueGame.getInstance().getClueGamePanel().getControlPanel();
 
 			if (e.getSource() == cancel) {
 				// Close the Jframe
@@ -137,10 +141,45 @@ public class SuggestionDialog extends JDialog {
 					// else the cards for the suggestion have been chosen
 					sugggestion = new Solution(personCard, weaponCard, roomCard);
 
+					Player suggested = board.getPlayerCardMap().get(sugggestion.getPerson());
+
+					suggested.setMovedAgainstWill(true);
+					suggested.move(board.getHumanPlayer().getLocation());
+
+					board.revalidate();
+					board.repaint();
+
+					gameControlPanel.setGuess(sugggestion.toString());
+
 					// Handle the suggestion
-					suggestionHandling = (TreeMap<Card, Player>) board.handleSuggestion(sugggestion, suggestor);
-					disproofCard = suggestionHandling.firstEntry().getKey();
-					disproofPlayer = suggestionHandling.firstEntry().getValue();
+					suggestionHandling = board.handleSuggestion(sugggestion, suggestor);
+
+					disproofCard = suggestionHandling.getCard();
+					disproofPlayer = suggestionHandling.getPerson();
+
+					// If the card is null i.e. it was not disproven
+					String guessResult;
+					if (disproofCard == null) {
+						guessResult = "The Suggestion was not Disproven";
+						// Show that the Card is not Disproven
+					} // Else there it was disproven
+					else {
+						guessResult = disproofPlayer.getName() + " showed you " + disproofCard.getName();
+						// Upate pannel, which also updates player object
+						ClueGame instance = ClueGame.getInstance();
+
+						Color c = Color.WHITE;
+
+						if (disproofCard.getCardType().equals(CardType.PERSON)) {
+							c = disproofCard.getColor();
+						}
+
+						instance.getClueGamePanel().getCardPanel().updateSeen(disproofCard, c);
+					}
+
+					gameControlPanel.setGuessResult(guessResult);
+
+					setVisible(false);
 
 				}
 

@@ -115,7 +115,6 @@ public class AccusationDialog extends JDialog {
 
 			} else if (e.getSource() == submit) {
 				// Ensure that all three Cards have been selected (none of them are null)
-
 				// If one of them hasn't been selected (i.e it is null)
 				if (roomCard == null | personCard == null | weaponCard == null) {
 					JOptionPane splash = new JOptionPane();

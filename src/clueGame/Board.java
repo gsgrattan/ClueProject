@@ -15,12 +15,13 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.Set;
-import java.util.TreeMap;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import gui.ClueGame;
+import gui.GameControlPanel;
 import gui.SuggestionDialog;
 
 public class Board extends JPanel implements MouseListener {
@@ -77,6 +78,7 @@ public class Board extends JPanel implements MouseListener {
 	}
 
 	public static Board getInstance() {
+
 		return INSTANCE;
 	}
 
@@ -126,7 +128,7 @@ public class Board extends JPanel implements MouseListener {
 		// NOW do the first roll for the player and calculate the first set of targets
 
 		currRoll = this.getRoll();
-		calcTargets(human.getLocation(), currRoll);
+		calcTargets(human.getLocation(), currRoll, this.human);
 
 	}
 
@@ -191,14 +193,14 @@ public class Board extends JPanel implements MouseListener {
 
 					if (this.players.size() == 0) {
 
-						human = new HumanPlayer(splitData[1], Board.INSTANCE, new BoardCell(x, y), c);
+						human = new HumanPlayer(splitData[1], this, new BoardCell(x, y), c);
 						player = human;
 
 						this.currentPlayerTurn = 0;
 
 						// otherwise its a computer
 					} else {
-						player = new ComputerPlayer(splitData[1], Board.INSTANCE, new BoardCell(x, y), c);
+						player = new ComputerPlayer(splitData[1], this, new BoardCell(x, y), c);
 					}
 					// set the player number
 					player.setPlayerNum(this.players.size());
@@ -206,7 +208,7 @@ public class Board extends JPanel implements MouseListener {
 
 					players.add(player);
 
-					card = new Card(splitData[1], CardType.PERSON);
+					card = new Card(splitData[1], CardType.PERSON, c);
 					this.playerCards.add(card);
 
 					// Insert the player and it's card into the map
@@ -355,10 +357,9 @@ public class Board extends JPanel implements MouseListener {
 
 	}
 
-	// TODO: refactor so that it returns both the disproving card and the player who
-	// displayed it
-	public Map<Card, Player> handleSuggestion(Solution suggestion, Player suggestor) {
-		TreeMap<Card, Player> result = new TreeMap<Card, Player>();
+	// returns both the disproving card and the player who displayed it
+	public SuggestionResult handleSuggestion(Solution suggestion, Player suggestor) {
+		SuggestionResult result;
 		Player player;
 		Card card = null;
 
@@ -375,39 +376,37 @@ public class Board extends JPanel implements MouseListener {
 
 			card = player.disproveSuggestion(suggestion, suggestor);
 			if (card != null) {
-				result.put(card, player);
-				break;
+				result = new SuggestionResult(card, player);
+				return result;
 			}
 
 		} while (player != suggestor);
 
-		return result;
+		return null;
 
-	}
-
-	public void calcTargets(BoardCell startCell, int pathlength) {
-		targets = new HashSet<BoardCell>();
-		this.calcTargets(startCell, pathlength, pathlength, new HashSet<BoardCell>());
 	}
 
 	public void deal() {
 		// Create a deck
-		this.deck.addAll(this.playerCards);
-		this.deck.addAll(this.weaponCards);
-		this.deck.addAll(this.roomCards);
+		HashSet<Card> dealPlayerCards = new HashSet<>(this.playerCards);
+		HashSet<Card> dealRoomCards = new HashSet<>(this.roomCards);
+		HashSet<Card> dealWeaponCards = new HashSet<>(this.weaponCards);
+
+		this.deck.addAll(dealPlayerCards);
+		this.deck.addAll(dealRoomCards);
+		this.deck.addAll(dealWeaponCards);
 
 		// Select the cards for the solution
-		Card perpetrator = getRandomCard(this.playerCards);
-		Card weapon = getRandomCard(this.weaponCards);
-		Card place = getRandomCard(this.roomCards);
+		Card perpetrator = getRandomCard(dealPlayerCards);
+		Card weapon = getRandomCard(dealWeaponCards);
+		Card place = getRandomCard(dealRoomCards);
 
 		// Create the solution
 		this.trueSolution = new Solution(perpetrator, weapon, place);
 
 		// Create the deck to deal from
-		Set<Card> dealDeck = new HashSet<Card>();
+		Set<Card> dealDeck = new HashSet<Card>(deck);
 		// Add all the values from deck to it
-		dealDeck.addAll(deck);
 
 		// remove the solution from the deck to be dealt
 		dealDeck.remove(perpetrator);
@@ -432,6 +431,7 @@ public class Board extends JPanel implements MouseListener {
 				}
 			}
 		}
+		System.out.println(this.playerCards.size());
 	}
 
 	@Override
@@ -605,6 +605,15 @@ public class Board extends JPanel implements MouseListener {
 	 * maxpath, Set<BoardCell> visited), but this one is shorter and more human
 	 * readable.
 	 */
+	public void calcTargets(BoardCell startCell, int pathlength, Player player) {
+		targets = new HashSet<BoardCell>();
+		this.calcTargets(startCell, pathlength, pathlength, new HashSet<BoardCell>());
+
+		if (player.getMovedAgainstWill()) {
+			targets.add(player.getLocation());
+			player.setMovedAgainstWill(false);
+		}
+	}
 
 	/*
 	 * Calculate all the targets and add them to the adjacency list, this method is
@@ -630,7 +639,7 @@ public class Board extends JPanel implements MouseListener {
 		}
 	}
 
-	// Choses a random card from the deck
+	// Chooses a random card from the deck
 	private Card getRandomCard(Set<Card> cards) {
 		Random rand = new Random();
 		// set the initial to zero
@@ -779,12 +788,12 @@ public class Board extends JPanel implements MouseListener {
 		// If it is the human player's turn
 		if (players.get(currentPlayerTurn) == this.human) {
 			// Calculate the targets, they will be drawn in paintComponent()
-			calcTargets(this.human.getLocation(), roll);
+			calcTargets(this.human.getLocation(), roll, this.human);
 
 		} else {
 			// Otherwise calculate the computer's move and move them
 			ComputerPlayer computer = (ComputerPlayer) players.get(currentPlayerTurn);
-			calcTargets(computer.getLocation(), roll);
+			calcTargets(computer.getLocation(), roll, computer);
 			computer.move(computer.selectTarget(targets));
 
 			// If we're in a room, make a suggestion
@@ -792,7 +801,22 @@ public class Board extends JPanel implements MouseListener {
 				Solution suggestion = computer.createSuggestion();
 
 				Player suggested = playerCardMap.get(suggestion.getPerson());
+
+				suggested.setMovedAgainstWill(true);
 				suggested.move(computer.getLocation());
+
+				SuggestionResult result = this.handleSuggestion(suggestion, computer);
+
+				GameControlPanel gameControlPanel = ClueGame.getInstance().getClueGamePanel().getControlPanel();
+
+				String guessResult = "The Suggestion was not Disproven";
+
+				if (result != null) {
+					guessResult = "Suggestion was disproven by " + result.getPerson().getName();
+				}
+
+				gameControlPanel.setGuess(suggestion.toString());
+				gameControlPanel.setGuessResult(guessResult);
 
 			}
 		}
@@ -877,6 +901,11 @@ public class Board extends JPanel implements MouseListener {
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
 
+	}
+
+	public Map<Card, Player> getPlayerCardMap() {
+		// TODO Auto-generated method stub
+		return this.playerCardMap;
 	}
 
 }
