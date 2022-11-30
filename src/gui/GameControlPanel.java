@@ -9,9 +9,6 @@ import clueGame.Board;
 
 public class GameControlPanel extends JPanel {
 
-	private String name, guess, guessResult;
-	private int roll, turn;
-
 	private PlayerControlPanel playerControl;
 	private GuessPanel guessPanel;
 
@@ -22,10 +19,6 @@ public class GameControlPanel extends JPanel {
 	 */
 
 	public GameControlPanel(Board board) {
-		name = "huh";
-		guess = "who";
-		guessResult = "ME";
-		roll = 69;
 
 		this.setLayout(new GridLayout(2, 0));
 
@@ -45,12 +38,10 @@ public class GameControlPanel extends JPanel {
 	 */
 
 	public void setGuess(String string) {
-		this.guess = string;
 		guessPanel.setGuess(string);
 	}
 
 	public void setGuessResult(String string) {
-		this.guessResult = string;
 		guessPanel.setGuessResult(string);
 
 	}

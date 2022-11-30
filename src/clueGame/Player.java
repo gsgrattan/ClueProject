@@ -86,13 +86,17 @@ public abstract class Player {
 	}
 
 	public void updateSeen(Card seenCard) {
-		seenCards.add(seenCard);
-		if (seenCard.getCardType() == CardType.ROOM) {
-			this.seenRoomCards.add(seenCard);
-		} else if (seenCard.getCardType() == CardType.WEAPON) {
-			this.seenWeaponCards.add(seenCard);
-		} else if (seenCard.getCardType() == CardType.PERSON) {
-			this.seenPeopleCards.add(seenCard);
+		// If we haven't previously seen the card
+		if (!seenCards.contains(seenCard)) {
+
+			seenCards.add(seenCard);
+			if (seenCard.getCardType() == CardType.ROOM) {
+				this.seenRoomCards.add(seenCard);
+			} else if (seenCard.getCardType() == CardType.WEAPON) {
+				this.seenWeaponCards.add(seenCard);
+			} else if (seenCard.getCardType() == CardType.PERSON) {
+				this.seenPeopleCards.add(seenCard);
+			}
 		}
 	}
 

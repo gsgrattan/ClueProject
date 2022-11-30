@@ -7,6 +7,7 @@ import java.util.Set;
 
 public class ComputerPlayer extends Player {
 	// constructor
+
 	public ComputerPlayer(String name, Board board, BoardCell boardcell, Color color) {
 		super(name, board, boardcell, color);
 	}
@@ -50,6 +51,40 @@ public class ComputerPlayer extends Player {
 		}
 
 		return new Solution(chosenPlayerCard, chosenWeaponCard, roomCard);
+
+	}
+
+	public boolean knowsSolution() {
+		// The computer knows the solution if they haven't seen only one Player, Weapon,
+		// or Card
+
+		boolean result;
+
+		Board board = this.getBoard();
+		Set<Card> possiblePlayerCards = new HashSet<Card>(board.getPlayerCards());
+		Set<Card> possibleRoomCards = new HashSet<Card>(board.getRoomCards());
+		Set<Card> possibleWeaponCards = new HashSet<Card>(board.getWeaponCards());
+
+		possiblePlayerCards.removeAll(this.getSeenPeopleCards());
+		possibleRoomCards.removeAll(this.getSeenRoomCards());
+		possibleWeaponCards.removeAll(this.getSeenWeaponCards());
+
+		// If the size of each the possible card lists is one, there
+		result = ((possiblePlayerCards.size() == 1) & (possibleRoomCards.size() == 1)
+				& (possibleWeaponCards.size() == 1));
+
+		return result;
+
+	}
+
+	public Solution createAccusation() {
+		if (this.knowsSolution()) {
+
+			return this.getBoard().getSolution();
+
+		}
+
+		return null;
 
 	}
 

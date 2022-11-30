@@ -431,7 +431,7 @@ public class Board extends JPanel implements MouseListener {
 				}
 			}
 		}
-		System.out.println(trueSolution);
+
 	}
 
 	@Override
@@ -620,6 +620,8 @@ public class Board extends JPanel implements MouseListener {
 	 * private because it is called by the public one above which is used as a
 	 * "setup" function.
 	 */
+
+	// TODO: Add the
 	private void calcTargets(BoardCell startCell, int pathlength, int maxpath, Set<BoardCell> visited) {
 		if (visited.isEmpty()) {
 			visited.add(startCell);
@@ -630,6 +632,8 @@ public class Board extends JPanel implements MouseListener {
 
 		} else {
 			for (BoardCell cell : startCell.getAdjList()) {
+
+				Character cellLabel = cell.getCellLabel();
 				if ((cell.isRoomCenter() || !cell.getOccupied()) && !visited.contains(cell)) {
 					visited.add(cell);
 					calcTargets(cell, pathlength - 1, maxpath, visited);
@@ -796,29 +800,44 @@ public class Board extends JPanel implements MouseListener {
 			calcTargets(computer.getLocation(), roll, computer);
 			computer.move(computer.selectTarget(targets));
 
+			// If the computer knows the solution, i.e. their accusation is guarenteed to be
+			// correct
+			if (computer.knowsSolution()) {
+
+			}
+
 			// If we're in a room, make a suggestion
 			if (computer.getLocation().isRoomCenter()) {
 				Solution suggestion = computer.createSuggestion();
-
+				// Get the player that was suggested in the suggestion
 				Player suggested = playerCardMap.get(suggestion.getPerson());
 
+				// Move them to the room were the suggestion was made
 				suggested.setMovedAgainstWill(true);
 				suggested.move(computer.getLocation());
 
+				// Get the result of the suggestin
 				SuggestionResult result = this.handleSuggestion(suggestion, computer);
 
-				GameControlPanel gameControlPanel = ClueGame.getInstance().getClueGamePanel().getControlPanel();
-
+				// The suggestion is true by default
 				String guessResult = "The Suggestion was not Disproven";
 
+				// If the result is disproven, print who disproved it
 				if (result != null) {
 					guessResult = "Suggestion was disproven by " + result.getPerson().getName();
+
+					// Update the seen Cards by player who suggested it
+					computer.updateSeen(result.getCard());
+
 				}
+
+				GameControlPanel gameControlPanel = ClueGame.getInstance().getClueGamePanel().getControlPanel();
 
 				gameControlPanel.setGuess(suggestion.toString());
 				gameControlPanel.setGuessResult(guessResult);
 
 			}
+
 		}
 	}
 

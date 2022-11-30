@@ -35,7 +35,7 @@ public class JPCardList extends JPanel {
 		// clear the panel
 		this.removeAll();
 		// Change the color to have more opacity and let the text be visible
-		Color temp = new Color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() / 4);
+		Color temp = new Color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() / 2);
 
 		// If it is the empty cell
 		if (!notNone) {
@@ -53,7 +53,6 @@ public class JPCardList extends JPanel {
 		// ReAdd all the textfields to the panel
 		for (JTextField field : fields) {
 			this.add(field);
-			field.setBackground(temp);
 			field.setEditable(false);
 
 		}

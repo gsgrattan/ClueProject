@@ -43,7 +43,7 @@ public class PlayerControlPanel extends JPanel {
 		playerName.setText(board.getPlayers().get(board.getCurrentPlayerTurn()).getName());
 		Color temp = board.getPlayers().get(board.getCurrentPlayerTurn()).getColor();
 
-		playerName.setBackground(new Color(temp.getRed(), temp.getGreen(), temp.getBlue(), temp.getAlpha() / 2));
+		playerName.setBackground(new Color(temp.getRed(), temp.getGreen(), temp.getBlue(), temp.getAlpha()));
 		playerName.setEditable(false);
 
 		// playerName.setEditable(false);
@@ -105,14 +105,8 @@ public class PlayerControlPanel extends JPanel {
 					playerName.setText(board.getPlayers().get(board.getCurrentPlayerTurn()).getName());
 					Color temp = board.getPlayers().get(board.getCurrentPlayerTurn()).getColor();
 
-					playerName.setBackground(
-							new Color(temp.getRed(), temp.getGreen(), temp.getBlue(), temp.getAlpha() / 2));
-
-					playerName.removeAll();
-					playerName.revalidate();
-					playerName.repaint();
-					board.revalidate();
-					board.repaint();
+					playerName
+							.setBackground(new Color(temp.getRed(), temp.getGreen(), temp.getBlue(), temp.getAlpha()));
 
 				} else {
 					// else, the player hasn't moved and their turn isn over yet
@@ -120,9 +114,11 @@ public class PlayerControlPanel extends JPanel {
 					JOptionPane turnNotOver = new JOptionPane();
 					turnNotOver.showMessageDialog(new JFrame(), "Your turn isn't over yet!", "Turn Not Over",
 							JOptionPane.WARNING_MESSAGE);
+
 				}
 
 			} else {
+
 				// Else its a computer player, and process their turn
 				int roll = this.board.getRoll();
 
@@ -134,16 +130,11 @@ public class PlayerControlPanel extends JPanel {
 				// Update the board
 				playerName.setText(board.getPlayers().get(board.getCurrentPlayerTurn()).getName());
 				Color temp = board.getPlayers().get(board.getCurrentPlayerTurn()).getColor();
-				playerName
-						.setBackground(new Color(temp.getRed(), temp.getGreen(), temp.getBlue(), temp.getAlpha() / 2));
-				playerName.removeAll();
-				playerName.revalidate();
-				playerName.repaint();
-
-				board.revalidate();
-				board.repaint();
-
+				playerName.setBackground(new Color(temp.getRed(), temp.getGreen(), temp.getBlue(), temp.getAlpha()));
 			}
+
+			board.revalidate();
+			board.repaint();
 
 		}
 
@@ -159,7 +150,15 @@ public class PlayerControlPanel extends JPanel {
 
 		public void actionPerformed(ActionEvent e) {
 
-			AccusationDialog accusationDialog = new AccusationDialog(board.getHumanPlayer(), board);
+			// If it is the Human Player's turn
+			if (board.getHumanPlayer().equals(board.getPlayers().get(board.getCurrentPlayerTurn()))) {
+
+				AccusationDialog accusationDialog = new AccusationDialog(board.getHumanPlayer(), board);
+			} else {
+				JOptionPane notYourTurn = new JOptionPane();
+				notYourTurn.showMessageDialog(new JFrame(), "You Can't make an accusaiton when it isn't your turn!",
+						"It's not your turn", JOptionPane.WARNING_MESSAGE);
+			}
 
 		}
 

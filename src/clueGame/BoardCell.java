@@ -207,6 +207,10 @@ public class BoardCell {
 		return roomCenter;
 	}
 
+	public boolean isRoom() {
+		return (this.cellLabel != 'X' & this.cellLabel != 'W');
+	}
+
 	// return the destination of the secret passage
 	public char getSecretPassage() {
 		return secretPassage;
