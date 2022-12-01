@@ -133,15 +133,15 @@ public class AccusationDialog extends JDialog {
 					// If the accusation is correct
 					if (board.checkAccusation(accusation)) {
 						accusationResultTitle = "Congratulations! You won the game!";
-						accusationResult = "Congratulations, you won the game! You made the correct accusation that the murder was committed by "
+						accusationResult = "Congratulations, you won the game!\n You made the correct accusation that the murder was committed by:\n "
 								+ trueSolution.getPerson().getName() + " with the " + trueSolution.getWeapon().getName()
-								+ " in the " + trueSolution.getRoom().getName() + "!";
+								+ " in " + trueSolution.getRoom().getName() + "!";
 						// Else it is incorrect
 					} else {
 						accusationResultTitle = "Oh no! You lost the game!";
-						accusationResult = "You lost the game! Your wrong accusaiton led you to be killed by "
+						accusationResult = "You lost the game!\n Your wrong accusaiton led you to be killed by:\n "
 								+ trueSolution.getPerson().getName() + " with the " + trueSolution.getWeapon().getName()
-								+ " in the " + trueSolution.getRoom().getName() + "!";
+								+ " in " + trueSolution.getRoom().getName() + "!";
 					}
 
 					EndGameDialog endGameDialog = new EndGameDialog(accusationResultTitle, accusationResult);

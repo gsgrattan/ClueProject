@@ -7,20 +7,24 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JTextField;
+import javax.swing.JTextArea;
 
 public class EndGameDialog extends JDialog {
 
 	JButton exit, playAgain;
 
 	public EndGameDialog(String title, String body) {
+		// Initialize the parent class
 		super(ClueGame.getInstance(), Dialog.ModalityType.DOCUMENT_MODAL);
 
+		// Set the basic panel types
 		this.setSize(300, 300);
 		this.setTitle(title);
+
 		this.setLayout(new GridLayout(3, 0));
 
-		JTextField textBody = new JTextField();
+		// Set the textbody
+		JTextArea textBody = new JTextArea(5, 20);
 		textBody.setEditable(false);
 		textBody.setText(body);
 		this.add(textBody);
@@ -28,6 +32,7 @@ public class EndGameDialog extends JDialog {
 		exit = new JButton("Exit");
 		playAgain = new JButton("Play Again");
 
+		// Add the buttons
 		this.add(playAgain);
 		this.add(exit);
 
@@ -42,6 +47,7 @@ public class EndGameDialog extends JDialog {
 	public class ButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 
+			// Handle the cases for the buttons
 			if (e.getSource() == exit) {
 				ClueGame.getInstance().endGame();
 			} else if (e.getSource() == playAgain) {

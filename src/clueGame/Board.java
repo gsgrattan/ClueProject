@@ -432,8 +432,6 @@ public class Board extends JPanel implements MouseListener {
 				}
 			}
 		}
-		System.out.println(trueSolution);
-
 	}
 
 	@Override
@@ -611,7 +609,7 @@ public class Board extends JPanel implements MouseListener {
 		targets = new HashSet<BoardCell>();
 		this.calcTargets(startCell, pathlength, pathlength, new HashSet<BoardCell>());
 
-		if (player.getMovedAgainstWill()) {
+		if (player.getMovedAgainstWill() || targets.size() == 0) {
 			targets.add(player.getLocation());
 			player.setMovedAgainstWill(false);
 		}
@@ -801,9 +799,9 @@ public class Board extends JPanel implements MouseListener {
 			// correct
 			if (computer.knowsSolution()) {
 				String resultTitle = "Boo you Lost";
-				String resultBody = "You Lost " + computer.getName() + " made the correct Accusaiton that it was "
-						+ trueSolution.getPerson().getName() + " in " + trueSolution.getRoom().getName() + " with "
-						+ trueSolution.getWeapon().getName();
+				String resultBody = "You Lost\n " + computer.getName() + " made the correct Accusaiton: \n it was "
+						+ trueSolution.getPerson().getName() + " with " + trueSolution.getWeapon().getName() + " in "
+						+ trueSolution.getRoom().getName();
 				EndGameDialog avengersEndgame = new EndGameDialog(resultTitle, resultBody);
 			}
 

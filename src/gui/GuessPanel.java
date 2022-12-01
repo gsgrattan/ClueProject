@@ -19,12 +19,14 @@ public class GuessPanel extends JPanel {
 		guess.setLayout(new GridLayout(1, 0));
 		guess.setBorder(new TitledBorder(new EtchedBorder(), "Guess"));
 
+		// The Guess JTextfiel
 		currGuess = new JTextField();
 		currGuess.setText("IDK< I'm stupid!");
 		currGuess.setEditable(false);
 		guess.add(currGuess);
 		this.add(guess);
 
+		// GuessResult TextField
 		guessResult = new JPanel();
 		guessResult.setLayout(new GridLayout(1, 0));
 		guessResult.setBorder(new TitledBorder(new EtchedBorder(), "Guess Result"));
@@ -37,6 +39,8 @@ public class GuessPanel extends JPanel {
 		this.add(guessResult);
 
 	}
+
+	// Functions to help us set the guess and guess result
 
 	public void setGuess(String string) {
 		currGuess.setText(string);
