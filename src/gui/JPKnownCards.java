@@ -44,7 +44,7 @@ public class JPKnownCards extends JPanel {
 
 	public void updateSeen(Card card, Color color) {
 		// if the card is not in the hand, add it
-		if (!player.getHand().contains(card)) {
+		if (!(player.getHand().contains(card) | player.getSeen().contains(card))) {
 
 			this.seenPanel.updatePanel(card, color);
 			this.add(handPanel);

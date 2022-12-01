@@ -154,16 +154,15 @@ public class SuggestionDialog extends JDialog {
 					// Handle the suggestion
 					suggestionHandling = board.handleSuggestion(sugggestion, suggestor);
 
-					disproofCard = suggestionHandling.getCard();
-					disproofPlayer = suggestionHandling.getPerson();
-
 					// If the card is null i.e. it was not disproven
 					String guessResult;
-					if (disproofCard == null) {
+					if (suggestionHandling == null) {
 						guessResult = "The Suggestion was not Disproven";
 						// Show that the Card is not Disproven
 					} // Else there it was disproven
 					else {
+						disproofCard = suggestionHandling.getCard();
+						disproofPlayer = suggestionHandling.getPerson();
 						guessResult = disproofPlayer.getName() + " showed you " + disproofCard.getName();
 						// Upate pannel, which also updates player object
 						ClueGame instance = ClueGame.getInstance();

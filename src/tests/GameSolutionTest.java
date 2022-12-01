@@ -99,7 +99,7 @@ class GameSolutionTest {
 
 		Player testPlayer1 = new ComputerPlayer("testPlayer1", board, board.getCell(0, 0), Color.black);
 
-		proof = testPlayer0.disproveSuggestion(accusation, testPlayer1);
+		proof = testPlayer0.disproveSuggestionIterator(accusation, testPlayer1);
 
 		// The testplayer currently has an empty and so it should not be able to
 		// disprove, thus it returns null
@@ -109,7 +109,7 @@ class GameSolutionTest {
 
 		testPlayer0.updateHand(accusation.getPerson());
 
-		proof = testPlayer0.disproveSuggestion(accusation, testPlayer1);
+		proof = testPlayer0.disproveSuggestionIterator(accusation, testPlayer1);
 
 		// Assert that it returns the correct card
 		assertEquals(proof, accusation.getPerson());
@@ -121,7 +121,7 @@ class GameSolutionTest {
 		int numPeople = 0;
 		int numWeapons = 0;
 		for (int i = 0; i < numTests; ++i) {
-			proof = testPlayer0.disproveSuggestion(accusation, testPlayer1);
+			proof = testPlayer0.disproveSuggestionIterator(accusation, testPlayer1);
 			if (proof.equals(accusation.getPerson())) {
 				++numPeople;
 			} else if (proof.equals(accusation.getWeapon())) {

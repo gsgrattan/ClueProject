@@ -41,6 +41,7 @@ public class ClueGame extends JFrame {
 	public static void endGame() {
 		INSTANCE.setVisible(false);
 		INSTANCE.dispose();
+		System.exit(0);
 
 	}
 

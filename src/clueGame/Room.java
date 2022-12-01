@@ -2,12 +2,15 @@ package clueGame;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.ArrayList;
 
 public class Room {
 	private String name;
 	private BoardCell center;
 	private BoardCell labelCell;
 	private boolean isRoom = false;
+
+	private ArrayList<BoardCell> cellList;
 
 	private Card roomCard;
 
@@ -16,6 +19,7 @@ public class Room {
 	 */
 	public Room(String name) {
 		this.name = name;
+		cellList = new ArrayList<BoardCell>();
 
 	}
 
@@ -91,6 +95,15 @@ public class Room {
 
 	public void setRoomCard(Card roomCard) {
 		this.roomCard = roomCard;
+	}
+
+	public void addCell(BoardCell cell) {
+		this.cellList.add(cell);
+	}
+
+	public ArrayList<BoardCell> getCellList() {
+		return this.cellList;
+
 	}
 
 }

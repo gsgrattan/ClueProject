@@ -21,6 +21,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import gui.ClueGame;
+import gui.EndGameDialog;
 import gui.GameControlPanel;
 import gui.SuggestionDialog;
 
@@ -374,7 +375,7 @@ public class Board extends JPanel implements MouseListener {
 
 			player = this.players.get(i);
 
-			card = player.disproveSuggestion(suggestion, suggestor);
+			card = player.disproveSuggestionIterator(suggestion, suggestor);
 			if (card != null) {
 				result = new SuggestionResult(card, player);
 				return result;
@@ -431,6 +432,7 @@ public class Board extends JPanel implements MouseListener {
 				}
 			}
 		}
+		System.out.println(trueSolution);
 
 	}
 
@@ -621,7 +623,7 @@ public class Board extends JPanel implements MouseListener {
 	 * "setup" function.
 	 */
 
-	// TODO: Add the
+	// TODO: Add the rooms to the list of targets so we can highlight them
 	private void calcTargets(BoardCell startCell, int pathlength, int maxpath, Set<BoardCell> visited) {
 		if (visited.isEmpty()) {
 			visited.add(startCell);
@@ -633,7 +635,6 @@ public class Board extends JPanel implements MouseListener {
 		} else {
 			for (BoardCell cell : startCell.getAdjList()) {
 
-				Character cellLabel = cell.getCellLabel();
 				if ((cell.isRoomCenter() || !cell.getOccupied()) && !visited.contains(cell)) {
 					visited.add(cell);
 					calcTargets(cell, pathlength - 1, maxpath, visited);
@@ -795,16 +796,21 @@ public class Board extends JPanel implements MouseListener {
 			calcTargets(this.human.getLocation(), roll, this.human);
 
 		} else {
-			// Otherwise calculate the computer's move and move them
 			ComputerPlayer computer = (ComputerPlayer) players.get(currentPlayerTurn);
-			calcTargets(computer.getLocation(), roll, computer);
-			computer.move(computer.selectTarget(targets));
-
 			// If the computer knows the solution, i.e. their accusation is guarenteed to be
 			// correct
 			if (computer.knowsSolution()) {
-
+				String resultTitle = "Boo you Lost";
+				String resultBody = "You Lost " + computer.getName() + " made the correct Accusaiton that it was "
+						+ trueSolution.getPerson().getName() + " in " + trueSolution.getRoom().getName() + " with "
+						+ trueSolution.getWeapon().getName();
+				EndGameDialog avengersEndgame = new EndGameDialog(resultTitle, resultBody);
 			}
+
+			// Otherwise calculate the computer's move and move them
+
+			calcTargets(computer.getLocation(), roll, computer);
+			computer.move(computer.selectTarget(targets));
 
 			// If we're in a room, make a suggestion
 			if (computer.getLocation().isRoomCenter()) {
@@ -828,7 +834,11 @@ public class Board extends JPanel implements MouseListener {
 
 					// Update the seen Cards by player who suggested it
 					computer.updateSeen(result.getCard());
-
+				} else {
+					Card selfResult = computer.disproveSuggestionSelf(suggestion, suggested);
+					if (selfResult == null) {
+						computer.setKnowsSolution();
+					}
 				}
 
 				GameControlPanel gameControlPanel = ClueGame.getInstance().getClueGamePanel().getControlPanel();

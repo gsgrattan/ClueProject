@@ -43,42 +43,43 @@ public abstract class Player {
 
 	}
 
-	public Card disproveSuggestion(Solution suggestion, Player suggestor) {
-		// TODO: Refactor and clean up method
-
-		ArrayList<Card> proofList = new ArrayList();
+	public Card disproveSuggestionIterator(Solution suggestion, Player suggestor) {
 
 		// if this player made the accusation, return null;
 		if (this.name.equals(suggestor.getName())) {
 			return null;
 		} else {
-			Card person = suggestion.getPerson();
-			Card weapon = suggestion.getWeapon();
-			Card room = suggestion.getRoom();
+			return this.disproveSuggestionSelf(suggestion, suggestor);
+		}
+	}
 
-			// Check the overlap (if any) between the Solution and the players hand
-			if (hand.contains(person)) {
-				proofList.add(person);
-			}
-			if (hand.contains(weapon)) {
-				proofList.add(weapon);
-			}
-			if (hand.contains(room)) {
-				proofList.add(room);
-			}
+	public Card disproveSuggestionSelf(Solution suggestion, Player suggestor) {
+		ArrayList<Card> proofList = new ArrayList();
 
-			if (proofList.size() == 0) {
-				return null;
-			} else {
-				Random rand = new Random();
+		Card person = suggestion.getPerson();
+		Card weapon = suggestion.getWeapon();
+		Card room = suggestion.getRoom();
 
-				int randInt = rand.nextInt(proofList.size());
-
-				return proofList.get(randInt);
-
-			}
+		// Check the overlap (if any) between the Solution and the players hand
+		if (hand.contains(person)) {
+			proofList.add(person);
+		}
+		if (hand.contains(weapon)) {
+			proofList.add(weapon);
+		}
+		if (hand.contains(room)) {
+			proofList.add(room);
 		}
 
+		if (proofList.size() == 0) {
+			return null;
+		} else {
+			Random rand = new Random();
+
+			int randInt = rand.nextInt(proofList.size());
+
+			return proofList.get(randInt);
+		}
 	}
 
 	public void updateHand(Card card) {
@@ -193,6 +194,16 @@ public abstract class Player {
 
 	public boolean getMovedAgainstWill() {
 		return this.movedAgainstWill;
+	}
+
+	public Set<Card> getSeen() {
+
+		HashSet<Card> seenCards = new HashSet<Card>();
+		seenCards.addAll(seenPeopleCards);
+		seenCards.addAll(seenWeaponCards);
+		seenCards.addAll(seenRoomCards);
+		return seenCards;
+
 	}
 
 	public void move(BoardCell move) {

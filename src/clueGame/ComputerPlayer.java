@@ -8,6 +8,8 @@ import java.util.Set;
 public class ComputerPlayer extends Player {
 	// constructor
 
+	boolean knowsSolution = false;
+
 	public ComputerPlayer(String name, Board board, BoardCell boardcell, Color color) {
 		super(name, board, boardcell, color);
 	}
@@ -58,6 +60,10 @@ public class ComputerPlayer extends Player {
 		// The computer knows the solution if they haven't seen only one Player, Weapon,
 		// or Card
 
+		if (knowsSolution) {
+			return knowsSolution;
+		}
+
 		boolean result;
 
 		Board board = this.getBoard();
@@ -74,17 +80,6 @@ public class ComputerPlayer extends Player {
 				& (possibleWeaponCards.size() == 1));
 
 		return result;
-
-	}
-
-	public Solution createAccusation() {
-		if (this.knowsSolution()) {
-
-			return this.getBoard().getSolution();
-
-		}
-
-		return null;
 
 	}
 
@@ -116,6 +111,10 @@ public class ComputerPlayer extends Player {
 		} else {
 			return randomCell;
 		}
+	}
+
+	public void setKnowsSolution() {
+		this.knowsSolution = true;
 	}
 
 }
